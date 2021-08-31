@@ -1,0 +1,37 @@
+env:
+  browser: true
+  es2021: true
+  jest: true
+  jest/globals: true
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  ecmaVersion: 12
+  sourceType: module
+plugins:
+  - react
+  - jest
+rules:
+  linebreak-style:
+    - off
+    - unix
+  quotes:
+    - warn
+    - single
+  semi:
+    - warn
+    - always
+  no-var:
+    - error
+  eqeqeq:
+    - warn
+    - smart
+  prefer-const:
+    - error
+    - destructuring: all
+  react/display-name: off
+  react/prop-types: off
+extends:
+  - 'eslint:recommended'
+  - 'plugin:react/recommended'
+  - 'prettier'
