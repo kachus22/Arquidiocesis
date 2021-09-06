@@ -4,17 +4,34 @@ Usuario con acceso: Admin
 Descripción: Pantalla para registrar un evento al calendario
 */
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Switch, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Switch,
+  ActivityIndicator,
+} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { Input, Button, Picker, PickerScreen } from '../../components';
+import {
+  Input,
+  Button,
+  Picker,
+  PickerScreen,
+  DatePicker,
+} from '../../components';
 import { API } from '../../lib';
 
 export default (props) => {
+  const today = new Date();
+  const currDate =
+    today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [eventResponsible, setEventResponsible] = useState('');
-  const [eventDates, setEventDates] = useState('');
+  const [eventDates, setEventDates] = useState(currDate);
+
   const onAdd = props.route.params.onAdd;
 
   props.navigation.setOptions({
@@ -66,10 +83,10 @@ export default (props) => {
         value={eventResponsible}
         onChangeText={setEventResponsible}
       />
-      <Input
-        name="Fechas del evento"
-        value={eventDates}
-        onChangeText={setEventDates}
+      <DatePicker
+        onDateChange={(d) => setEventDates(d)}
+        date={eventDates}
+        name="Fecha del Evento"
       />
       <Button text="Añadir" loading={loading} onPress={addEvent} />
     </KeyboardAwareScrollView>
@@ -96,3 +113,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+
