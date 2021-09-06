@@ -4,10 +4,22 @@ Usuario con acceso: Admin
 Descripción: Pantalla para editar un evento
 */
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Switch, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Switch,
+  ActivityIndicator,
+} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { Input, Button, Picker, PickerScreen } from '../../components';
+import {
+  Input,
+  Button,
+  Picker,
+  PickerScreen,
+  DatePicker,
+} from '../../components';
 import { API } from '../../lib';
 
 export default (props) => {
@@ -72,10 +84,10 @@ export default (props) => {
         value={eventResponsible}
         onChangeText={setEventResponsible}
       />
-      <Input
-        name="Fechas del evento"
-        value={eventDates}
-        onChangeText={setEventDates}
+      <DatePicker
+        onDateChange={(d) => setEventDates(d)}
+        date={eventDates}
+        name="Fecha del Evento"
       />
       <Button text="Guardar" loading={loading} onPress={editEvent} />
     </KeyboardAwareScrollView>
