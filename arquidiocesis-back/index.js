@@ -28,30 +28,10 @@ const comentario = require('./routes/comentario');
 const all = require('./routes/all');
 const webNotifications = require('./routes/web-notifications');
 const WebPushNotifications = require('./WebPushNotifications');
-const fs = require('fs');
 
-//init firebase
-const admin = require('firebase-admin');
-
-// Check if environment variable for firebase
-// auth is available
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-  const serviceJson = Buffer.from(
-    process.env.FIREBASE_SERVICE_ACCOUNT,
-    'base64'
-  ).toString();
-  fs.writeFileSync('./ServiceAccountKey.json', serviceJson);
-  const serviceAccount = JSON.parse(serviceJson);
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-} else {
-  // Check if firebase auth file is present
-  const serviceAccount = require('./ServiceAccountKey');
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-}
+// init firebase
+const admin = require('./firebase/setup');
+const firestore = admin.firestore();
 
 const Multer = require('multer');
 const fUtil = require('./routes/filesUtil');
@@ -77,7 +57,6 @@ app.get('/', (req, res) => {
 // init web push notifications
 WebPushNotifications.init();
 
-const firestore = admin.firestore();
 app.get('/', (req, res) => {
   res.send('Arquidiocesis Backend').status(200);
 });
