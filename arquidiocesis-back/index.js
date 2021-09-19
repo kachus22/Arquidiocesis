@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8000;
 const cors = require('cors');
+const Parroco = require('./routes/parroco/router');
 const parroquias = require('./routes/parroquia');
 const decanato = require('./routes/decanato');
 const login = require('./routes/login');
@@ -90,6 +91,8 @@ app.post('/api/admin/users/delete', (req, res) =>
 app.post('/api/admin/users/edit', (req, res) =>
   admins.editUserDetail(firestore, req, res)
 );
+
+app.use('/api/parrocos', Parroco);
 
 app.get('/api/parroquias', (req, res) => {
   parroquias.getall(firestore, req, res);
