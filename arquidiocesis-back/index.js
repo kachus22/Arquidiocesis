@@ -29,6 +29,7 @@ const comentario = require('./routes/comentario');
 const all = require('./routes/all');
 const webNotifications = require('./routes/web-notifications');
 const WebPushNotifications = require('./WebPushNotifications');
+const oficios = require('./routes/oficios');
 
 // init firebase
 const admin = require('./firebase/setup');
@@ -459,6 +460,16 @@ app.post('/api/web-notifications', (req, res) =>
 
 app.post('/api/upload', multer.array('files', 10), (req, res) =>
   fUtil.uploadBlobFiles(firestore, req, res)
+);
+
+app.get('/api/oficios', (req, res) =>
+  oficios.getAllOficios(firestore, req, res)
+);
+
+app.post('/api/oficios', (req, res) => oficios.add(firestore, req, res));
+
+app.delete('/api/oficios/:id', (req, res) =>
+  oficios.delete(firestore, req, res)
 );
 
 // No route found
