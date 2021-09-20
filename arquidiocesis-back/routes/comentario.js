@@ -69,8 +69,8 @@ const add = async (firestore, req, res) => {
     await util.triggerNotification(
       group.exists
         ? [
-          ...(group.data().group_admins ?? []),
-          ...(group.data().group_members ?? []),
+          ...(group.data().group_admins || []),
+          ...(group.data().group_members || []),
         ]
         : [],
       'Nuevo comentario',

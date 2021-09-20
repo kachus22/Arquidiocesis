@@ -56,8 +56,8 @@ const add = async (firestore, req, res) => {
     const group = await groupRef.get();
     const userIDs = group.exists
       ? [
-        ...(group.data().group_admins ?? []),
-        ...(group.data().group_members ?? []),
+        ...(group.data().group_admins || []),
+        ...(group.data().group_members || []),
       ]
       : [];
 

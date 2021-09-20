@@ -8,8 +8,8 @@ const { firestore } = require('firebase-admin');
 function init(publicKey, privateKey) {
   webpush.setVapidDetails(
     'mailto:arquidiocesis.itesm.mty@gmail.com',
-    publicKey ?? process.env.VAPID_PUBLIC_KEY,
-    privateKey ?? process.env.VAPID_PRIVATE_KEY
+    publicKey || process.env.VAPID_PUBLIC_KEY,
+    privateKey || process.env.VAPID_PRIVATE_KEY
   );
 }
 
