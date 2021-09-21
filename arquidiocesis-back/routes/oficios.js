@@ -14,7 +14,7 @@ const add = async (firestore, req, res) => {
   }
 
   const new_oficio_entry = {
-    value: oficio_label.toLowerCase(),
+    value: encodeURI(oficio_label.toLowerCase().split(' ').join('_')),
     label: oficio_label,
   };
 
