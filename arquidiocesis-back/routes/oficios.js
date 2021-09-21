@@ -18,7 +18,7 @@ const add = async (firestore, req, res) => {
     label: oficio_label,
   };
 
-  // check that current role_title is not already registered
+  // check that current oficio_label is not already registered
   await firestore
     .collection('oficios')
     .where('label', '==', new_oficio_entry.label)
@@ -35,7 +35,7 @@ const add = async (firestore, req, res) => {
 
   try {
     const collectionref = await firestore.collection('oficios');
-    const docref = await collectionref.add(new_oficio_entry); // add new role to roles collection
+    const docref = await collectionref.add(new_oficio_entry); // add new oficio to oficios collection
     // --------- success ----------//
     // ----------VVVVVVV-----------//
     res.send({
@@ -71,7 +71,7 @@ const getAllOficios = async (firestore, req, res) => {
 };
 
 const remove = async (firestore, req, res) => {
-  const { id } = req.params; //role ID
+  const { id } = req.params; //oficio ID
 
   if (id == null || id === '') {
     res.send({
