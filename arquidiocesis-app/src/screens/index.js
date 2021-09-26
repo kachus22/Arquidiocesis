@@ -27,6 +27,8 @@ import RegistroEvento from './calendar/RegistroEvento';
 import Evento from './calendar/Evento';
 import EditEvento from './calendar/EditEvento';
 
+import Parrocos from './parroco/Parrocos';
+
 import Grupos from './grupos/Grupos';
 import RegistroGrupo from './grupos/RegistroGrupo';
 import Grupo from './grupos/Grupo';
@@ -89,6 +91,7 @@ export {
   RegistroMiembro,
   RegistroCapilla,
   RegistroGrupo,
+  Parrocos,
   Parroquia,
   Grupo,
   EditGrupo,
