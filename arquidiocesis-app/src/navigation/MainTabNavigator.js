@@ -5,6 +5,7 @@ import {
   Coordinadores,
   Grupos,
   Parroquias,
+  Parrocos,
 } from '../screens';
 
 export const PARROQUIAS_TAB_NAME = 'Parroquias';
@@ -13,6 +14,7 @@ export const COORDINA_TAB_NAME = 'Coordina';
 export const HEMA_TAB_NAME = 'HeMa';
 export const CALENDARIO_TAB_NAME = 'Calendario';
 export const CAPACITACION_TAB_NAME = 'Capacitación';
+export const PARROCOS_TAB_NAME = 'Parrocos';
 
 const TabScreens = {
   [PARROQUIAS_TAB_NAME]: Parroquias,
@@ -21,6 +23,7 @@ const TabScreens = {
   [HEMA_TAB_NAME]: Grupos,
   [CALENDARIO_TAB_NAME]: Calendar,
   [CAPACITACION_TAB_NAME]: Capacitaciones,
+  [PARROCOS_TAB_NAME]: Parrocos,
 };
 
 function filteredTabs(tabNamesToFilter) {
@@ -32,6 +35,7 @@ function filteredTabs(tabNamesToFilter) {
     }, {});
 }
 
+//Revisar parroco aquí
 export function getTabScreens(userType) {
   if (userType === 'admin' || userType === 'integrante_chm') {
     return TabScreens;
@@ -76,6 +80,9 @@ export function getTabBarIconName(routeName) {
       break;
     case CAPACITACION_TAB_NAME:
       iconName = 'chalkboard-teacher';
+      break;
+    case PARROCOS_TAB_NAME:
+      iconName = 'cross';
       break;
     default:
       iconName = 'exclamation-circle';
