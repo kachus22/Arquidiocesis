@@ -589,6 +589,19 @@ async function registerCoordinador(data) {
 }
 
 /**
+ * Create a parroco and add it to the databse.
+ * @param {object} data The data of the new parroco
+ */
+async function registerParroco(data) {
+  const res = await post('parrocos', data);
+  if (res.error) throw res;
+  else {
+    Cache.setParrocos(res.data);
+    return res.data;
+  }
+}
+
+/**
  * Register a member to the grupo.
  * @param {string} grupo The member's grupo id
  * @param {object} data The new member's data
@@ -1319,7 +1332,6 @@ async function getParticipantes(capacitacion) {
   else return res.data;
 }
 
-
 /**
  * Get group members' stats
  */
@@ -1333,12 +1345,11 @@ async function getStats() {
   }
 }
 
-
 /**
  * Get the list of parrocos
  * @param {boolean} force Bypass the cache
  */
- async function getParrocos(force = false) {
+async function getParrocos(force = false) {
   if (!force && Cache.getParrocos()) {
     return Cache.getParrocos();
   }
@@ -1443,6 +1454,5 @@ export default {
 
   //getParroco,
   getParrocos,
-  //addParrocos,
-
+  registerParroco,
 };

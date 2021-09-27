@@ -4,15 +4,9 @@ Usuario con acceso:
 Descripción: Pantalla para ver la información de todos los párrocos en el sistema
 */
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  ScrollView,
-} from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { RefreshControl } from 'react-native-web-refresh-control';
-import { AlphabetList, Button, ErrorView, Alert } from '../../components';
+import { AlphabetList, Button, ErrorView } from '../../components';
 import { API } from '../../lib';
 
 export default (props) => {
@@ -21,39 +15,35 @@ export default (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState(false);
 
-
-
   useEffect(() => {
     API.getUser().then(setUser);
-    
+
     API.getParrocos(true)
       .then((d) => {
         setRefreshing(false);
         setData(d);
         setError(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setRefreshing(false);
         setError(true);
       });
-
   }, []);
 
   const getParrocos = () => {
     setRefreshing(true);
     setError(false);
-    
+
     API.getParrocos(true)
       .then((d) => {
         setRefreshing(false);
         setData(d);
         setError(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setRefreshing(false);
         setError(true);
       });
-
   };
 
   const formatData = () => {
@@ -63,31 +53,39 @@ export default (props) => {
     }));
   };
 
-
+  const addParroco = () => {
+    props.navigation.navigate('RegistroParroco', {
+      onAdd: (c) => {
+        setData([...data, c]);
+      },
+    });
+  };
 
   return (
-    <ScrollView style={{ flex: 1 }}
-    refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={getParrocos} />   
-    }
-    > 
-
+    <ScrollView
+      style={{ flex: 1 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={getParrocos} />
+      }>
       <View>
-      {user && (user.type == 'admin' ||  user.type == 'superadmin' || user.type == 'coordinador') && (
-        <Button
-          text="Registro párroco"
-          style={{ width: 250, alignSelf: 'center' }}
-          //onPress={addParroco}
-        /> ) }
+        {user &&
+          (user.type === 'admin' ||
+            user.type === 'superadmin' ||
+            user.type === 'coordinador') && (
+            <Button
+              text="Registro párroco"
+              style={{ width: 250, alignSelf: 'center' }}
+              onPress={addParroco}
+            />
+          )}
 
-
-      {error ? (
-        <ErrorView
-          message={'Hubo un error cargando los párrocos...'}
-          refreshing={refreshing}
-          retry={getParrocos}
-        />
-      ) : data.length == 0 ? (
+        {error ? (
+          <ErrorView
+            message={'Hubo un error cargando los párrocos...'}
+            refreshing={refreshing}
+            retry={getParrocos}
+          />
+        ) : data.length === 0 ? (
           <View>
             <Text
               style={{
@@ -103,7 +101,7 @@ export default (props) => {
         ) : (
           <AlphabetList
             data={formatData()}
-           // onSelect={detalleCoord}
+            // onSelect={detalleCoord}
             scroll
             sort={'nombre_completo'}
           />
@@ -112,14 +110,3 @@ export default (props) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  testText: {
-    fontSize: 20,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
