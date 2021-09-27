@@ -35,6 +35,7 @@ function filteredTabs(tabNamesToFilter) {
     }, {});
 }
 
+//Revisar parroco aquí
 export function getTabScreens(userType) {
   if (userType === 'admin' || userType === 'integrante_chm') {
     return TabScreens;
