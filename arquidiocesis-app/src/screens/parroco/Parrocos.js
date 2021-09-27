@@ -21,12 +21,53 @@ export default (props) => {
   var [refreshing, setRefreshing] = useState(false);
   var [user, setUser] = useState(false);
 
+
+
+  useEffect(() => {
+    API.getUser().then(setUser);
+    
+    API.getParrocos(true)
+      .then((d) => {
+        setRefreshing(false);
+        setData(d);
+        setError(false);
+      })
+      .catch((err) => {
+        setRefreshing(false);
+        setError(true);
+      });
+    console.log("hola")
+  }, []);
+
+  var getParrocos = () => {
+    setRefreshing(true);
+    setError(false);
+    
+    API.getParrocos(true)
+      .then((d) => {
+        setRefreshing(false);
+        setData(d);
+        setError(false);
+      })
+      .catch((err) => {
+        setRefreshing(false);
+        setError(true);
+      });
+
+  };
+
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}
+    refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={getParrocos} />
+      
+    }
+    > 
       <View>
         <Button
           text="Registro párroco"
           style={{ width: 250, alignSelf: 'center' }}
+          //onPress={addParroco}
         />
       </View>
     </ScrollView>
