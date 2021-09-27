@@ -1319,6 +1319,7 @@ async function getParticipantes(capacitacion) {
   else return res.data;
 }
 
+
 /**
  * Get group members' stats
  */
@@ -1329,6 +1330,23 @@ async function getStats() {
     throw res.error;
   } else {
     return res;
+  }
+}
+
+
+/**
+ * Get the list of parrocos
+ * @param {boolean} force Bypass the cache
+ */
+ async function getParrocos(force = false) {
+  if (!force && Cache.getParrocos()) {
+    return Cache.getParrocos();
+  }
+  const p = await get('parrocos');
+  if (p.error) throw p;
+  else {
+    Cache.setParrocos(p.data);
+    return p.data;
   }
 }
 
@@ -1422,4 +1440,9 @@ export default {
   editEvent,
   getObjectivesByYear,
   editObjective,
+
+  //getParroco,
+  getParrocos,
+  //addParrocos,
+
 };

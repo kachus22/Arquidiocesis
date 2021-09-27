@@ -322,6 +322,30 @@ var clearCache = () => {
   zonas = false;
 };
 
+let parrocos = false;
+let parrocos_dirty = false;
+var getParrocos = () => parrocos;
+var getParroco = (id) =>
+  parrocos ? parrocos.find((a) => a.id == id && a.cached) : null;
+var isParrocosDirty = () => parrocos_dirty;
+var setParrocos = (z) => {
+  parrocos = z;
+};
+var setParroco = (i) => {
+  i.cached = true;
+  if (!parrocos) parrocos = [];
+  var ix = parrocos.findIndex((a) => a.id == i.id);
+  if (ix == -1) parrocos.push(i);
+  else parrocos[ix] = i;
+};
+
+var setParrocosDirty = (d = true) => {
+  parrocos_dirty = d;
+};
+var addParroco = (i) => {
+  parrocos.push(i);
+};
+
 export default {
   clearCache,
 
@@ -403,4 +427,12 @@ export default {
   changeCapacitacionEncargado,
   getCapacitadores,
   setCapacitadores,
+
+  getParroco,
+  getParrocos,
+  setParroco,
+  setParrocosDirty,
+  isParrocosDirty,
+  addParroco,
 };
+
