@@ -16,10 +16,10 @@ import { AlphabetList, Button, ErrorView, Alert } from '../../components';
 import { API } from '../../lib';
 
 export default (props) => {
-  var [data, setData] = useState(false);
-  var [error, setError] = useState(false);
-  var [refreshing, setRefreshing] = useState(false);
-  var [user, setUser] = useState(false);
+  const [data, setData] = useState([]);
+  const [error, setError] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [user, setUser] = useState(false);
 
 
 
@@ -31,7 +31,6 @@ export default (props) => {
         setRefreshing(false);
         setData(d);
         setError(false);
-        console.log(d)
       })
       .catch((err) => {
         setRefreshing(false);
@@ -40,7 +39,7 @@ export default (props) => {
 
   }, []);
 
-  var getParrocos = () => {
+  const getParrocos = () => {
     setRefreshing(true);
     setError(false);
     
@@ -57,14 +56,14 @@ export default (props) => {
 
   };
 
-  var formatData = () => {
-    console.log(data)
-   /* return data.map((a) => ({
+  const formatData = () => {
+    return data.map((a) => ({
       ...a,
       nombre_completo: `${a.nombre} ${a.apellido_paterno}`,
-    }));*/
-    return []
+    }));
   };
+
+
 
   return (
     <ScrollView style={{ flex: 1 }}
@@ -72,6 +71,7 @@ export default (props) => {
       <RefreshControl refreshing={refreshing} onRefresh={getParrocos} />   
     }
     > 
+
       <View>
       {user && (user.type == 'admin' ||  user.type == 'superadmin' || user.type == 'coordinador') && (
         <Button
@@ -80,7 +80,14 @@ export default (props) => {
           //onPress={addParroco}
         /> ) }
 
-      {data.length == 0 ? (
+
+      {error ? (
+        <ErrorView
+          message={'Hubo un error cargando los párrocos...'}
+          refreshing={refreshing}
+          retry={getParrocos}
+        />
+      ) : data.length == 0 ? (
           <View>
             <Text
               style={{
