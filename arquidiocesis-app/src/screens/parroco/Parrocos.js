@@ -31,12 +31,13 @@ export default (props) => {
         setRefreshing(false);
         setData(d);
         setError(false);
+        console.log(d)
       })
       .catch((err) => {
         setRefreshing(false);
         setError(true);
       });
-    console.log("hola")
+
   }, []);
 
   var getParrocos = () => {
@@ -56,19 +57,50 @@ export default (props) => {
 
   };
 
+  var formatData = () => {
+    console.log(data)
+   /* return data.map((a) => ({
+      ...a,
+      nombre_completo: `${a.nombre} ${a.apellido_paterno}`,
+    }));*/
+    return []
+  };
+
   return (
     <ScrollView style={{ flex: 1 }}
     refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={getParrocos} />
-      
+      <RefreshControl refreshing={refreshing} onRefresh={getParrocos} />   
     }
     > 
       <View>
+      {user && (user.type == 'admin' ||  user.type == 'superadmin' || user.type == 'coordinador') && (
         <Button
           text="Registro párroco"
           style={{ width: 250, alignSelf: 'center' }}
           //onPress={addParroco}
-        />
+        /> ) }
+
+      {data.length == 0 ? (
+          <View>
+            <Text
+              style={{
+                textAlign: 'center',
+                fontSize: 16,
+                color: 'gray',
+                backgroundColor: 'white',
+                padding: 15,
+              }}>
+              No hay párrocos en el sistema.
+            </Text>
+          </View>
+        ) : (
+          <AlphabetList
+            data={formatData()}
+           // onSelect={detalleCoord}
+            scroll
+            sort={'nombre_completo'}
+          />
+        )}
       </View>
     </ScrollView>
   );

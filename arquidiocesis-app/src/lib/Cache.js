@@ -434,5 +434,6 @@ export default {
   setParrocosDirty,
   isParrocosDirty,
   addParroco,
+  setParrocos,
 };
 
