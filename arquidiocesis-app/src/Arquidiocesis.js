@@ -76,6 +76,7 @@ import {
   User,
   Zona,
   ChatChannelPosts,
+  RegistroParroco,
 } from './screens';
 import { useDeepLinking } from './navigation/DeepLinking';
 
@@ -308,6 +309,8 @@ function App({ user, logout }) {
           name="ChatMoreAttachments"
           component={ChatMoreAttachments}
         />
+
+        <Stack.Screen name="RegistroParroco" component={RegistroParroco} />
       </Stack.Navigator>
     </NavigationContainer>
   );
