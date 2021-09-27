@@ -1,7 +1,7 @@
 /* 
-Nombre: Coordinadores.js
-Usuario con acceso: Admin
-Descripción: Pantalla para ver la información de todos los coordinadores en el sistema
+Nombre: Parrocos.js
+Usuario con acceso: 
+Descripción: Pantalla para ver la información de todos los párrocos en el sistema
 */
 import React, { useState, useEffect } from 'react';
 import {
