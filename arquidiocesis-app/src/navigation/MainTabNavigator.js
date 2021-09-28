@@ -52,6 +52,10 @@ export function getTabScreens(userType) {
     ]);
   }
 
+  if (userType === 'parroco') {
+    return filteredTabs([HEMA_TAB_NAME, CALENDARIO_TAB_NAME]);
+  }
+
   if (userType === 'capacitacion') {
     return filteredTabs([CALENDARIO_TAB_NAME, CAPACITACION_TAB_NAME]);
   }

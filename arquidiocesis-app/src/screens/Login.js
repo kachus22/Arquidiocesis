@@ -27,7 +27,6 @@ export default (props) => {
   useEffect(() => {
     setLoading(false);
   }, []);
-  console.log('asd');
 
   const doLogin = () => {
     const { valid, prompt } = Util.validateForm(

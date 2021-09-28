@@ -71,7 +71,9 @@ export default (props) => {
         {user &&
           (user.type === 'admin' ||
             user.type === 'superadmin' ||
-            user.type === 'coordinador') && (
+            user.type === 'coordinador' ||
+            user.type === 'acompañante_zona' ||
+            user.type === 'acompañante_decanato') && (
             <Button
               text="Registro párroco"
               style={{ width: 250, alignSelf: 'center' }}

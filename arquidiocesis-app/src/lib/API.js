@@ -1451,8 +1451,6 @@ export default {
   editEvent,
   getObjectivesByYear,
   editObjective,
-
-  //getParroco,
   getParrocos,
   registerParroco,
 };
