@@ -1335,8 +1335,15 @@ async function getParticipantes(capacitacion) {
 /**
  * Get group members' stats
  */
-async function getStats() {
-  const res = await get('estadisticas');
+async function getStats(zone, decanato) {
+  let params = '?';
+  if (zone) {
+    params += `zone=${zone}`;
+  }
+  if (decanato) {
+    params += `&decanato=${decanato}`;
+  }
+  const res = await get(`estadisticas${params}`);
 
   if (res.error) {
     throw res.error;

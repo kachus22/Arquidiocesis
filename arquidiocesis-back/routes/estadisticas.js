@@ -32,8 +32,6 @@ const getEstadisticas = async (firestore, req, res) => {
     profesional: 0,
   };
 
-  let total = 0;
-
   const miembrosRef = firestore.collection('miembros');
   let miembros = null;
 
@@ -80,7 +78,7 @@ const getEstadisticas = async (firestore, req, res) => {
     }
 
     // After all of the data is fetched, return it
-    const parroquiaIds = await (await Promise.all(batches)).flat();
+    const parroquiaIds = (await Promise.all(batches)).flat();
 
     // Get Grupos
     const gruposRef = firestore.collection('grupos');
@@ -104,7 +102,7 @@ const getEstadisticas = async (firestore, req, res) => {
         })
       );
     }
-    const grupoIds = await (await Promise.all(batches)).flat();
+    const grupoIds = (await Promise.all(batches)).flat();
 
     // Get miembros
     batches = [];
@@ -125,14 +123,14 @@ const getEstadisticas = async (firestore, req, res) => {
       );
     }
 
-    miembros = await (await Promise.all(batches)).flat();
+    miembros = (await Promise.all(batches)).flat();
   } else {
     miembros = await miembrosRef.get();
   }
 
+  const total = miembros.length;
   miembros.forEach((miembro) => {
     const mdata = miembro.data();
-    total++;
 
     // Checking servicio medico
     const ficha_medica = mdata.ficha_medica;

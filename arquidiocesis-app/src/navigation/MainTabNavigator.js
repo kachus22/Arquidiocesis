@@ -1,29 +1,29 @@
 import {
   Acompanantes,
-  Calendar,
   Capacitaciones,
   Coordinadores,
   Grupos,
   Parroquias,
   Parrocos,
+  ZonasList,
 } from '../screens';
 
+export const ZONAS_TAB_NAME = 'Zonas';
 export const PARROQUIAS_TAB_NAME = 'Parroquias';
 export const ACOMPANANTES_TAB_NAME = 'Acompañantes';
 export const COORDINA_TAB_NAME = 'Coordina';
-export const HEMA_TAB_NAME = 'HeMa';
-export const CALENDARIO_TAB_NAME = 'Calendario';
-export const CAPACITACION_TAB_NAME = 'Capacitación';
 export const PARROCOS_TAB_NAME = 'Parrocos';
+export const HEMA_TAB_NAME = 'HeMa';
+export const CAPACITACION_TAB_NAME = 'Capacitación';
 
 const TabScreens = {
+  [ZONAS_TAB_NAME]: ZonasList,
   [PARROQUIAS_TAB_NAME]: Parroquias,
   [ACOMPANANTES_TAB_NAME]: Acompanantes,
   [COORDINA_TAB_NAME]: Coordinadores,
-  [HEMA_TAB_NAME]: Grupos,
-  [CALENDARIO_TAB_NAME]: Calendar,
-  [CAPACITACION_TAB_NAME]: Capacitaciones,
   [PARROCOS_TAB_NAME]: Parrocos,
+  [HEMA_TAB_NAME]: Grupos,
+  [CAPACITACION_TAB_NAME]: Capacitaciones,
 };
 
 function filteredTabs(tabNamesToFilter) {
@@ -41,23 +41,19 @@ export function getTabScreens(userType) {
   }
 
   if (userType === 'coordinador') {
-    return filteredTabs([HEMA_TAB_NAME, CALENDARIO_TAB_NAME]);
+    return filteredTabs([HEMA_TAB_NAME]);
   }
 
   if (userType === 'acompañante_zona' || userType === 'acompañante_decanato') {
-    return filteredTabs([
-      COORDINA_TAB_NAME,
-      CALENDARIO_TAB_NAME,
-      CAPACITACION_TAB_NAME,
-    ]);
+    return filteredTabs([COORDINA_TAB_NAME, CAPACITACION_TAB_NAME]);
   }
 
   if (userType === 'parroco') {
-    return filteredTabs([HEMA_TAB_NAME, CALENDARIO_TAB_NAME]);
+    return filteredTabs([HEMA_TAB_NAME]);
   }
 
   if (userType === 'capacitacion') {
-    return filteredTabs([CALENDARIO_TAB_NAME, CAPACITACION_TAB_NAME]);
+    return filteredTabs([CAPACITACION_TAB_NAME]);
   }
 
   return {};
@@ -66,20 +62,20 @@ export function getTabScreens(userType) {
 export function getTabBarIconName(routeName) {
   let iconName;
   switch (routeName) {
+    case ZONAS_TAB_NAME:
+      iconName = 'map-marked-alt';
+      break;
     case PARROQUIAS_TAB_NAME:
       iconName = 'church';
       break;
     case ACOMPANANTES_TAB_NAME:
-      iconName = 'globe-americas';
+      iconName = 'people-arrows';
       break;
     case COORDINA_TAB_NAME:
       iconName = 'user-circle';
       break;
     case HEMA_TAB_NAME:
       iconName = 'users';
-      break;
-    case CALENDARIO_TAB_NAME:
-      iconName = 'calendar';
       break;
     case CAPACITACION_TAB_NAME:
       iconName = 'chalkboard-teacher';
