@@ -1333,6 +1333,15 @@ async function getParticipantes(capacitacion) {
 }
 
 /**
+ * Get the oficios from a capcitación
+ */
+async function getOficios() {
+  const res = await get('oficios/');
+  if (res.error) throw res.error;
+  else return Object.values(res.data).sort((a, b) => a.label > b.label);
+}
+
+/**
  * Get group members' stats
  */
 async function getStats(zone, decanato) {
@@ -1382,6 +1391,7 @@ export default {
   setOnLogout,
   getLogin,
   getUser,
+  getOficios,
   login,
   logout,
   addCapilla,
