@@ -3,7 +3,7 @@ Nombre: RegistroMiembro.js
 Usuario con acceso: Admin
 Descripción: Pantalla para registrar un miembro de un grupo HEMA
 */
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Text, StyleSheet, CheckBox, View, Switch } from 'react-native';
 import { Input, Button, Picker, Alert, DatePicker } from '../../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -12,85 +12,59 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
-  var [loading, setLoading] = useState(false);
-  var [name, setName] = useState('');
-  var [apPaterno, setApPaterno] = useState('');
-  var [apMaterno, setApMaterno] = useState('');
-  var [email, setEmail] = useState('');
-  var [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
-  var [gender, setGender] = useState(false);
-  var [estadoCivil, setEstadoCivil] = useState(false);
-  var [domicilio, setDomicilio] = useState('');
-  var [colonia, setColonia] = useState('');
-  var [municipio, setMunicipio] = useState('');
-  var [phoneHome, setPhoneHome] = useState('');
-  var [phoneMobile, setPhoneMobile] = useState('');
-  var [phoneMobile, setPhoneMobile] = useState('');
-  var [escolaridad, setEscolaridad] = useState(false);
-  var [oficio, setOficio] = useState(false);
-  let [hasLaptop, setHasLaptop] = useState(false);
-  let [hasTablet, setHasTablet] = useState(false);
-  let [hasSmartphone, setHasSmartphone] = useState(false);
-  let [hasFacebook, setHasFacebook] = useState(false);
-  let [hasTwitter, setHasTwitter] = useState(false);
-  let [hasInstagram, setHasInstagram] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [apPaterno, setApPaterno] = useState('');
+  const [apMaterno, setApMaterno] = useState('');
+  const [email, setEmail] = useState('');
+  const [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
+  const [gender, setGender] = useState(false);
+  const [estadoCivil, setEstadoCivil] = useState(false);
+  const [domicilio, setDomicilio] = useState('');
+  const [colonia, setColonia] = useState('');
+  const [municipio, setMunicipio] = useState('');
+  const [phoneHome, setPhoneHome] = useState('');
+  const [phoneMobile, setPhoneMobile] = useState('');
+  const [escolaridad, setEscolaridad] = useState(false);
+  const [oficio, setOficio] = useState('Ninguno');
+  const [hasLaptop, setHasLaptop] = useState(false);
+  const [hasTablet, setHasTablet] = useState(false);
+  const [hasSmartphone, setHasSmartphone] = useState(false);
+  const [hasFacebook, setHasFacebook] = useState(false);
+  const [hasTwitter, setHasTwitter] = useState(false);
+  const [hasInstagram, setHasInstagram] = useState(false);
 
-  var [bloodType, setBloodType] = useState(false);
-  var [medicalService, setMedicalService] = useState(false);
-  var [alergic, setAlergic] = useState(false);
-  var [alergicDesc, setAlergicDesc] = useState('');
-  var [cardiovascular, setCardiovascular] = useState(false);
-  var [azucar, setAzucar] = useState(false);
-  var [hipertension, setHipertension] = useState(false);
-  var [sobrepeso, setSobrepeso] = useState(false);
-  var [socialSecurity, setSocialSecurity] = useState(false);
-  var [disability, setDisability] = useState(false);
-  var [disabilityDesc, setDisabilityDesc] = useState('');
-  var [ambulance, setAmbulance] = useState(false);
+  const [bloodType, setBloodType] = useState(false);
+  const [medicalService, setMedicalService] = useState(false);
+  const [alergic, setAlergic] = useState(false);
+  const [alergicDesc, setAlergicDesc] = useState('');
+  const [cardiovascular, setCardiovascular] = useState(false);
+  const [azucar, setAzucar] = useState(false);
+  const [hipertension, setHipertension] = useState(false);
+  const [sobrepeso, setSobrepeso] = useState(false);
+  const [socialSecurity, setSocialSecurity] = useState(false);
+  const [disability, setDisability] = useState(false);
+  const [disabilityDesc, setDisabilityDesc] = useState('');
+  const [ambulance, setAmbulance] = useState(false);
+  const [lista_oficios, setListaOficios] = useState([]);
 
-  var pickerRef = useRef(null);
+  // const pickerRef = useRef(null);
 
-  var onAdd = props.route.params.onAdd;
-  var group = props.route.params.grupo;
+  const onAdd = props.route.params.onAdd;
+  const group = props.route.params.grupo;
 
   props.navigation.setOptions({
     headerTitle: 'Registro Miembro',
   });
 
-  const lista_oficios = [
-    { label: 'Ninguno', value: 'Ninguno' },
-    { label: 'Plomero', value: 'Plomero' },
-    { label: 'Electricista', value: 'Electricista' },
-    { label: 'Carpintero', value: 'Carpintero' },
-    { label: 'Albañil', value: 'Albañil' },
-    { label: 'Pintor', value: 'Pintor' },
-    { label: 'Mecánico', value: 'Mecánico' },
-    { label: 'Músico', value: 'Músico' },
-    { label: 'Chofer', value: 'Chofer' },
-    { label: 'Maestra', value: 'Maestra' },
-    { label: 'Ama de Casa', value: 'Ama de Casa' },
-    { label: 'Enfermera', value: 'Enfermera' },
-    { label: 'Obrera general', value: 'Obrera general' },
-    { label: 'Trabajadora Social', value: 'Trabajadora Social' },
-    { label: 'Educadora', value: 'Educadora' },
-    { label: 'Doctora', value: 'Doctora' },
-    { label: 'Contadora', value: 'Contadora' },
-    { label: 'Cocinera', value: 'Cocinera' },
-    { label: 'Psicologa', value: 'Psicologa' },
-    { label: 'Costurera', value: 'Costurera' },
-    { label: 'Secretaria', value: 'Secretaria' },
-    { label: 'Asistente', value: 'Asistente' },
-    { label: 'Vendedora', value: 'Vendedora' },
-    { label: 'Demostradora', value: 'Demostradora' },
-    { label: 'Dentista', value: 'Dentista' },
-    { label: 'Estilista', value: 'Estilista' },
-    { label: 'Policia', value: 'Policia' },
-  ];
+  React.useEffect(() => {
+    API.getOficios().then(setListaOficios);
+  }, []);
 
-  var doRegister = () => {
+  const doRegister = () => {
     if (loading) return;
 
-    var data = {
+    const data = {
       nombre: name,
       apellido_paterno: apPaterno,
       apellido_materno: apMaterno,
@@ -129,7 +103,7 @@ export default (props) => {
       },
     };
 
-    var { valid, prompt } = Util.validateForm(data, {
+    const { valid, prompt } = Util.validateForm(data, {
       nombre: {
         type: 'minLength',
         value: 3,
@@ -177,7 +151,7 @@ export default (props) => {
         props.navigation.goBack();
       })
       .catch((err) => {
-        if (err.code && err.code == 999) {
+        if (err.code && err.code === 999) {
           Alert.alert('Error', 'No tienes acceso a este grupo.');
         } else {
           Alert.alert('Error', 'Hubo un error registrando el miembro');
@@ -186,10 +160,10 @@ export default (props) => {
       });
   };
 
-  var formatDate = (a) => {
-    var f = moment(a, 'YYYY-MM-DD').format('MMMM DD, YYYY');
-    return f.charAt(0).toUpperCase() + f.substr(1);
-  };
+  // const formatDate = (a) => {
+  //   const f = moment(a, 'YYYY-MM-DD').format('MMMM DD, YYYY');
+  //   return f.charAt(0).toUpperCase() + f.substr(1);
+  // };
 
   return (
     <KeyboardAwareScrollView style={styles.loginContainer} bounces={true}>
@@ -250,7 +224,11 @@ export default (props) => {
         ]}
         onValueChange={setEscolaridad}
       />
-      <Picker name="Oficio" items={lista_oficios} onValueChange={setOficio} />
+      <Picker
+        name="Oficio"
+        items={lista_oficios}
+        onValueChange={(oficio = 'Ninguno') => setOficio(oficio.label)}
+      />
       <Text style={styles.dispositivosHeader}>
         Indica los dispositivos que tenga
       </Text>

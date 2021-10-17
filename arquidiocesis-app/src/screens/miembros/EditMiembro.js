@@ -3,7 +3,7 @@ Nombre: EditMiembro.js
 Usuario con acceso: Admin
 Descripción: Pantalla para editar la información personal de un miembro de un grupo HEMA
 */
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Text, StyleSheet, CheckBox, View } from 'react-native';
 import { Input, Button, Picker, Alert, DatePicker } from '../../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -12,73 +12,46 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
-  var { persona } = props.route.params;
+  const { persona } = props.route.params;
 
-  var bd = moment.unix(persona.fecha_nacimiento._seconds);
+  let bd = moment.unix(persona.fecha_nacimiento._seconds);
   if (!bd.isValid()) bd = moment();
 
-  var [loading, setLoading] = useState(false);
-  var [name, setName] = useState(persona.nombre);
-  var [apPaterno, setApPaterno] = useState(persona.apellido_paterno);
-  var [apMaterno, setApMaterno] = useState(persona.apellido_materno);
-  var [email, setEmail] = useState(persona.email);
-  var [birthday, setBirthday] = useState(bd.format('YYYY-MM-DD'));
-  var [gender, setGender] = useState(persona.sexo);
-  var [estadoCivil, setEstadoCivil] = useState(persona.estado_civil);
-  var [domicilio, setDomicilio] = useState(persona.domicilio.domicilio);
-  var [colonia, setColonia] = useState(persona.domicilio.colonia);
-  var [municipio, setMunicipio] = useState(persona.domicilio.municipio);
-  var [phoneHome, setPhoneHome] = useState(persona.domicilio.telefono_casa);
-  var [phoneMobile, setPhoneMobile] = useState(persona.domicilio.telefono_movil);
-  var [escolaridad, setEscolaridad] = useState(persona.escolaridad);
-  var [oficio, setOficio] = useState(persona.oficio);
-  let [hasLaptop, setHasLaptop] = useState(persona.laptop);
-  let [hasTablet, setHasTablet] = useState(persona.tablet);
-  let [hasSmartphone, setHasSmartphone] = useState(persona.smartphone);
-  let [hasFacebook, setHasFacebook] = useState(persona.facebook);
-  let [hasTwitter, setHasTwitter] = useState(persona.twitter);
-  let [hasInstagram, setHasInstagram] = useState(persona.instagram);
-  var pickerRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(persona.nombre);
+  const [apPaterno, setApPaterno] = useState(persona.apellido_paterno);
+  const [apMaterno, setApMaterno] = useState(persona.apellido_materno);
+  const [email, setEmail] = useState(persona.email);
+  const [birthday, setBirthday] = useState(bd.format('YYYY-MM-DD'));
+  const [gender, setGender] = useState(persona.sexo);
+  const [estadoCivil, setEstadoCivil] = useState(persona.estado_civil);
+  const [domicilio, setDomicilio] = useState(persona.domicilio.domicilio);
+  const [colonia, setColonia] = useState(persona.domicilio.colonia);
+  const [municipio, setMunicipio] = useState(persona.domicilio.municipio);
+  const [phoneHome, setPhoneHome] = useState(persona.domicilio.telefono_casa);
+  const [phoneMobile, setPhoneMobile] = useState(
+    persona.domicilio.telefono_movil
+  );
+  const [escolaridad, setEscolaridad] = useState(persona.escolaridad);
+  const [oficio, setOficio] = useState(persona.oficio);
+  const [hasLaptop, setHasLaptop] = useState(persona.laptop);
+  const [hasTablet, setHasTablet] = useState(persona.tablet);
+  const [hasSmartphone, setHasSmartphone] = useState(persona.smartphone);
+  const [hasFacebook, setHasFacebook] = useState(persona.facebook);
+  const [hasTwitter, setHasTwitter] = useState(persona.twitter);
+  const [hasInstagram, setHasInstagram] = useState(persona.instagram);
+  // const pickerRef = useRef(null);
 
-  var { onEdit } = props.route.params;
+  const { onEdit } = props.route.params;
 
   props.navigation.setOptions({
     headerTitle: 'Editar Miembro',
   });
+  const [lista_oficios, setListaOficios] = useState([]);
 
-  const lista_oficios = [
-    'Ninguno',
-    'Plomero',
-    'Electricista',
-    'Carpintero',
-    'Albañil',
-    'Pintor',
-    'Mecánico',
-    'Músico',
-    'Chofer',
-    'Maestra',
-    'Ama de Casa',
-    'Enfermera',
-    'Obrera general',
-    'Trabajadora Social',
-    'Educadora',
-    'Doctora',
-    'Contadora',
-    'Cocinera',
-    'Psicologa',
-    'Costurera',
-    'Secretaria',
-    'Asistente',
-    'Vendedora',
-    'Demostradora',
-    'Dentista',
-    'Estilista',
-    'Policia',
-  ];
-
-  var save = () => {
+  const save = () => {
     if (loading) return;
-    var data = {
+    const data = {
       nombre: name,
       apellido_paterno: apPaterno,
       apellido_materno: apMaterno,
@@ -103,7 +76,7 @@ export default (props) => {
       instagram: hasInstagram,
     };
 
-    var { valid, prompt } = Util.validateForm(data, {
+    const { valid, prompt } = Util.validateForm(data, {
       nombre: {
         type: 'minLength',
         value: 3,
@@ -147,7 +120,7 @@ export default (props) => {
         props.navigation.goBack();
       })
       .catch((err) => {
-        if (err.code && err.code == 999) {
+        if (err.code && err.code === 999) {
           Alert.alert('Error', 'No tienes acceso a este grupo.');
         } else {
           Alert.alert('Error', 'Hubo un error editando el miembro.');
@@ -156,22 +129,22 @@ export default (props) => {
       });
   };
 
-  var formatDate = (a) => {
-    var f = moment(a, 'YYYY-MM-DD').format('MMMM DD, YYYY');
-    return f.charAt(0).toUpperCase() + f.substr(1);
-  };
+  // const formatDate = (a) => {
+  //   const f = moment(a, 'YYYY-MM-DD').format('MMMM DD, YYYY');
+  //   return f.charAt(0).toUpperCase() + f.substr(1);
+  // };
 
-  var getEstadoCivil = () => {
+  const getEstadoCivil = () => {
     return ['Soltero', 'Casado', 'Viudo', 'Unión Libre', 'Divorciado'].indexOf(
       persona.estado_civil
     );
   };
 
-  var getGenero = () => {
+  const getGenero = () => {
     return ['Masculino', 'Femenino', 'Sin especificar'].indexOf(persona.sexo);
   };
 
-  var getEscolaridad = () => {
+  const getEscolaridad = () => {
     return [
       'Ninguno',
       'Primaria',
@@ -182,9 +155,19 @@ export default (props) => {
     ].indexOf(persona.escolaridad);
   };
 
-  var getOficio = () => {
-    return lista_oficios.indexOf(persona.oficio);
+  const getOficio = () => {
+    return lista_oficios.length > 0
+      ? lista_oficios?.findIndex((val) => {
+          return val.label === persona.oficio;
+        })
+      : 0;
   };
+
+  React.useEffect(() => {
+    if (persona) {
+      API.getOficios().then(setListaOficios);
+    }
+  }, [persona]);
 
   return (
     <KeyboardAwareScrollView style={styles.loginContainer} bounces={true}>
@@ -241,8 +224,8 @@ export default (props) => {
       <Picker
         name="Oficio"
         items={lista_oficios}
-        onValueChange={setOficio}
-        select={getOficio()}
+        onValueChange={(oficio = 'Ninguno') => setOficio(oficio.label)}
+        select={getOficio}
       />
       <Text style={styles.dispositivosHeader}>
         Indica los dispositivos que tenga
