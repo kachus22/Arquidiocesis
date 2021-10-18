@@ -13,34 +13,34 @@ moment.locale('es');
 
 export default (props) => {
   const [identificador, setIdentificador] = useState('');
-  var [loading, setLoading] = useState(false);
-  var [name, setName] = useState('');
-  var [apPaterno, setApPaterno] = useState('');
-  var [apMaterno, setApMaterno] = useState('');
-  var [email, setEmail] = useState('');
-  var [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
-  var [gender, setGender] = useState(false);
-  var [estadoCivil, setEstadoCivil] = useState(false);
-  var [domicilio, setDomicilio] = useState('');
-  var [colonia, setColonia] = useState('');
-  var [municipio, setMunicipio] = useState('');
-  var [phoneHome, setPhoneHome] = useState('');
-  var [phoneMobile, setPhoneMobile] = useState('');
-  var [phoneMobile, setPhoneMobile] = useState('');
-  var [escolaridad, setEscolaridad] = useState(false);
-  var [oficio, setOficio] = useState(false);
-  var [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [apPaterno, setApPaterno] = useState('');
+  const [apMaterno, setApMaterno] = useState('');
+  const [email, setEmail] = useState('');
+  const [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
+  const [gender, setGender] = useState(false);
+  const [estadoCivil, setEstadoCivil] = useState(false);
+  const [domicilio, setDomicilio] = useState('');
+  const [colonia, setColonia] = useState('');
+  const [municipio, setMunicipio] = useState('');
+  const [phoneHome, setPhoneHome] = useState('');
+  const [phoneMobile, setPhoneMobile] = useState('');
+  const [escolaridad, setEscolaridad] = useState(false);
+  const [oficio, setOficio] = useState(false);
+  const [password, setPassword] = useState('');
+  const [lista_oficios, setListaOficios] = useState([]);
 
-  var onAdd = props.route.params.onAdd;
+  const onAdd = props.route.params.onAdd;
 
   props.navigation.setOptions({
     headerTitle: 'Registro Coordinador',
   });
 
-  var doRegister = () => {
+  const doRegister = () => {
     if (loading) return;
 
-    var data = {
+    const data = {
       identificador,
       nombre: name,
       apellido_paterno: apPaterno,
@@ -61,7 +61,7 @@ export default (props) => {
       },
     };
 
-    var { valid, prompt } = Util.validateForm(data, {
+    const { valid, prompt } = Util.validateForm(data, {
       identificador: {
         type: 'empty',
         prompt: 'Favor de introducir el identificador de la parroquia.',
@@ -127,6 +127,10 @@ export default (props) => {
         }
       });
   };
+
+  React.useEffect(() => {
+    API.getOficios().then(setListaOficios);
+  }, []);
 
   return (
     <KeyboardAwareScrollView style={styles.loginContainer} bounces={true}>
@@ -194,18 +198,8 @@ export default (props) => {
       <Picker
         name="Oficio"
         required
-        items={[
-          { label: 'Ninguno', value: 'Ninguno' },
-          { label: 'Plomero', value: 'Plomero' },
-          { label: 'Electricista', value: 'Electricista' },
-          { label: 'Carpintero', value: 'Carpintero' },
-          { label: 'Albañil', value: 'Albañil' },
-          { label: 'Pintor', value: 'Pintor' },
-          { label: 'Mecánico', value: 'Mecánico' },
-          { label: 'Músico', value: 'Músico' },
-          { label: 'Chofer', value: 'Chofer' },
-        ]}
-        onValueChange={setOficio}
+        items={lista_oficios}
+        onValueChange={(oficio = 'Ninguno') => setOficio(oficio.label)}
       />
 
       <Text style={styles.section}>Domicilio</Text>

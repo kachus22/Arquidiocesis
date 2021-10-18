@@ -3,7 +3,7 @@ Nombre: EditarParticipante.js
 Usuario con acceso: Admin, Acompañante
 Descripción: Pantalla para editar la información a detalle de un participante en un grupo de capacitación 
 */
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { Input, Button, Picker, Alert, DatePicker } from '../../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -12,35 +12,44 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
-  var { persona, capacitacion_id, onEdit } = props.route.params;
+  const { persona, capacitacion_id, onEdit } = props.route.params;
 
-  var bd = moment.unix(persona.fecha_nacimiento._seconds);
+  let bd = moment.unix(persona.fecha_nacimiento._seconds);
   if (!bd.isValid()) bd = moment();
 
-  var [loading, setLoading] = useState(false);
-  var [name, setName] = useState(persona.nombre);
-  var [apPaterno, setApPaterno] = useState(persona.apellido_paterno);
-  var [apMaterno, setApMaterno] = useState(persona.apellido_materno);
-  var [nombreCorto, setNombreCorto] = useState(persona.nombre_corto);
-  var [email, setEmail] = useState(persona.email);
-  var [birthday, setBirthday] = useState(bd.format('YYYY-MM-DD'));
-  var [gender, setGender] = useState(false);
-  var [estadoCivil, setEstadoCivil] = useState(false);
-  var [domicilio, setDomicilio] = useState(persona.domicilio.domicilio);
-  var [colonia, setColonia] = useState(persona.domicilio.colonia);
-  var [municipio, setMunicipio] = useState(persona.domicilio.municipio);
-  var [phoneHome, setPhoneHome] = useState(persona.domicilio.telefono_casa);
-  var [phoneMobile, setPhoneMobile] = useState(persona.domicilio.telefono_movil);
-  var [escolaridad, setEscolaridad] = useState(false);
-  var [oficio, setOficio] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(persona.nombre);
+  const [apPaterno, setApPaterno] = useState(persona.apellido_paterno);
+  const [apMaterno, setApMaterno] = useState(persona.apellido_materno);
+  const [nombreCorto, setNombreCorto] = useState(persona.nombre_corto);
+  const [email, setEmail] = useState(persona.email);
+  const [birthday, setBirthday] = useState(bd.format('YYYY-MM-DD'));
+  const [gender, setGender] = useState(false);
+  const [estadoCivil, setEstadoCivil] = useState(false);
+  const [domicilio, setDomicilio] = useState(persona.domicilio.domicilio);
+  const [colonia, setColonia] = useState(persona.domicilio.colonia);
+  const [municipio, setMunicipio] = useState(persona.domicilio.municipio);
+  const [phoneHome, setPhoneHome] = useState(persona.domicilio.telefono_casa);
+  const [phoneMobile, setPhoneMobile] = useState(
+    persona.domicilio.telefono_movil
+  );
+  const [escolaridad, setEscolaridad] = useState(false);
+  const [oficio, setOficio] = useState(false);
+  const [lista_oficios, setListaOficios] = useState([]);
+
+  React.useEffect(() => {
+    if (persona) {
+      API.getOficios().then(setListaOficios);
+    }
+  }, [persona]);
 
   props.navigation.setOptions({
     headerTitle: 'Editar Participante',
   });
 
-  var save = () => {
+  const save = () => {
     if (loading) return;
-    var data = {
+    const data = {
       nombre: name,
       apellido_paterno: apPaterno,
       apellido_materno: apMaterno,
@@ -60,7 +69,7 @@ export default (props) => {
       },
     };
 
-    var { valid, prompt } = Util.validateForm(data, {
+    const { valid, prompt } = Util.validateForm(data, {
       nombre: {
         type: 'minLength',
         value: 3,
@@ -95,7 +104,10 @@ export default (props) => {
       .then((done) => {
         setLoading(false);
         if (!done)
-          return Alert.alert('Error', 'Hubo un error editando el participante.');
+          return Alert.alert(
+            'Error',
+            'Hubo un error editando el participante.'
+          );
         data.fecha_nacimiento = {
           _seconds: moment(birthday, 'YYYY-MM-DD').unix(),
         };
@@ -109,22 +121,22 @@ export default (props) => {
       });
   };
 
-  var formatDate = (a) => {
-    var f = moment(a, 'YYYY-MM-DD').format('MMMM DD, YYYY');
-    return f.charAt(0).toUpperCase() + f.substr(1);
-  };
+  // const formatDate = (a) => {
+  //   const f = moment(a, 'YYYY-MM-DD').format('MMMM DD, YYYY');
+  //   return f.charAt(0).toUpperCase() + f.substr(1);
+  // };
 
-  var getEstadoCivil = () => {
+  const getEstadoCivil = () => {
     return ['Soltero', 'Casado', 'Viudo', 'Unión Libre', 'Divorciado'].indexOf(
       persona.estado_civil
     );
   };
 
-  var getGenero = () => {
+  const getGenero = () => {
     return ['Masculino', 'Femenino', 'Sin especificar'].indexOf(persona.sexo);
   };
 
-  var getEscolaridad = () => {
+  const getEscolaridad = () => {
     return [
       'Ninguno',
       'Primaria',
@@ -135,18 +147,12 @@ export default (props) => {
     ].indexOf(persona.escolaridad);
   };
 
-  var getOficio = () => {
-    return [
-      'Ninguno',
-      'Plomero',
-      'Electricista',
-      'Carpintero',
-      'Albañil',
-      'Pintor',
-      'Mecánico',
-      'Músico',
-      'Chofer',
-    ].indexOf(persona.oficio);
+  const getOficio = () => {
+    return lista_oficios.length > 0
+      ? lista_oficios?.findIndex((val) => {
+          return val.label === persona.oficio;
+        })
+      : 0;
   };
 
   return (
@@ -213,18 +219,8 @@ export default (props) => {
       <Picker
         name="Oficio"
         required
-        items={[
-          'Ninguno',
-          'Plomero',
-          'Electricista',
-          'Carpintero',
-          'Albañil',
-          'Pintor',
-          'Mecánico',
-          'Músico',
-          'Chofer',
-        ]}
-        onValueChange={setOficio}
+        items={lista_oficios}
+        onValueChange={(oficio = 'Ninguno') => setOficio(oficio.label)}
         select={getOficio()}
       />
 
