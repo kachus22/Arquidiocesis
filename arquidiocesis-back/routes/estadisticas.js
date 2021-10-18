@@ -125,7 +125,7 @@ const getEstadisticas = async (firestore, req, res) => {
 
     miembros = (await Promise.all(batches)).flat();
   } else {
-    miembros = await miembrosRef.get();
+    miembros = (await miembrosRef.get()).docs;
   }
 
   const total = miembros.length;
