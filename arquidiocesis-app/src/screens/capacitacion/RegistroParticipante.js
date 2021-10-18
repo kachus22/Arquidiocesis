@@ -3,7 +3,7 @@ Nombre: RegistroParticipante.js
 Usuario con acceso: Admin, Acompañante
 Descripción: Pantalla para registrar un participante de un grupo de Capacitación 
 */
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { Input, Button, Picker, Alert, DatePicker } from '../../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -12,29 +12,33 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
-  var { capacitacion, onAdd } = props.route.params;
+  const { capacitacion, onAdd } = props.route.params;
 
-  var [loading, setLoading] = useState(false);
-  var [name, setName] = useState('');
-  var [shortName, setShortName] = useState('');
-  var [apPaterno, setApPaterno] = useState('');
-  var [apMaterno, setApMaterno] = useState('');
-  var [email, setEmail] = useState('');
-  var [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
-  var [gender, setGender] = useState(false);
-  var [estadoCivil, setEstadoCivil] = useState(false);
-  var [domicilio, setDomicilio] = useState('');
-  var [colonia, setColonia] = useState('');
-  var [municipio, setMunicipio] = useState('');
-  var [phoneHome, setPhoneHome] = useState('');
-  var [phoneMobile, setPhoneMobile] = useState('');
-  var [phoneMobile, setPhoneMobile] = useState('');
-  var [escolaridad, setEscolaridad] = useState(false);
-  var [oficio, setOficio] = useState(false);
-  var pickerRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [shortName, setShortName] = useState('');
+  const [apPaterno, setApPaterno] = useState('');
+  const [apMaterno, setApMaterno] = useState('');
+  const [email, setEmail] = useState('');
+  const [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
+  const [gender, setGender] = useState(false);
+  const [estadoCivil, setEstadoCivil] = useState(false);
+  const [domicilio, setDomicilio] = useState('');
+  const [colonia, setColonia] = useState('');
+  const [municipio, setMunicipio] = useState('');
+  const [phoneHome, setPhoneHome] = useState('');
+  const [phoneMobile, setPhoneMobile] = useState('');
+  const [escolaridad, setEscolaridad] = useState(false);
+  const [oficio, setOficio] = useState(false);
+  const [lista_oficios, setListaOficios] = useState([]);
+  // const pickerRef = useRef(null);
 
-  var doRegister = () => {
-    var data = {
+  React.useEffect(() => {
+    API.getOficios().then(setListaOficios);
+  }, []);
+
+  const doRegister = () => {
+    const data = {
       nombre: name,
       apellido_paterno: apPaterno,
       apellido_materno: apMaterno,
@@ -54,7 +58,7 @@ export default (props) => {
       },
     };
 
-    var { valid, prompt } = Util.validateForm(data, {
+    const { valid, prompt } = Util.validateForm(data, {
       nombre: {
         type: 'minLength',
         value: 3,
@@ -174,18 +178,8 @@ export default (props) => {
       />
       <Picker
         name="Oficio"
-        items={[
-          'Ninguno',
-          'Plomero',
-          'Electricista',
-          'Carpintero',
-          'Albañil',
-          'Pintor',
-          'Mecánico',
-          'Músico',
-          'Chofer',
-        ]}
-        onValueChange={setOficio}
+        items={lista_oficios}
+        onValueChange={(oficio = 'Ninguno') => setOficio(oficio.label)}
         required
       />
 

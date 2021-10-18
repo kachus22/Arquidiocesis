@@ -4,7 +4,13 @@ Usuario con acceso: Admin
 Descripción: Pantalla que muestra los campos para el registro de los acompañantes de zona y decanato
 */
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Switch } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Switch,
+} from 'react-native';
 import { Input, Button, Picker, Alert, DatePicker } from '../../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { API, Util } from '../../lib';
@@ -12,30 +18,30 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
-  var [loading, setLoading] = useState(false);
-  var [name, setName] = useState('');
-  var [apPaterno, setApPaterno] = useState('');
-  var [apMaterno, setApMaterno] = useState('');
-  var [email, setEmail] = useState('');
-  var [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
-  var [gender, setGender] = useState(false);
-  var [estadoCivil, setEstadoCivil] = useState(false);
-  var [domicilio, setDomicilio] = useState('');
-  var [colonia, setColonia] = useState('');
-  var [municipio, setMunicipio] = useState('');
-  var [phoneHome, setPhoneHome] = useState('');
-  var [phoneMobile, setPhoneMobile] = useState('');
-  var [escolaridad, setEscolaridad] = useState(false);
-  var [oficio, setOficio] = useState(false);
-  var [password, setPassword] = useState('');
-  var [password2, setPassword2] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [apPaterno, setApPaterno] = useState('');
+  const [apMaterno, setApMaterno] = useState('');
+  const [email, setEmail] = useState('');
+  const [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
+  const [gender, setGender] = useState(false);
+  const [estadoCivil, setEstadoCivil] = useState(false);
+  const [domicilio, setDomicilio] = useState('');
+  const [colonia, setColonia] = useState('');
+  const [municipio, setMunicipio] = useState('');
+  const [phoneHome, setPhoneHome] = useState('');
+  const [phoneMobile, setPhoneMobile] = useState('');
+  const [escolaridad, setEscolaridad] = useState(false);
+  const [oficio, setOficio] = useState(false);
+  const [password, setPassword] = useState('');
+  const [password2, setPassword2] = useState('');
   const [assignedToZona, setAssignedToZona] = useState(true);
   const [zonas, setZonas] = useState(undefined);
   const [zonaSelected, setZonaSelected] = useState(undefined);
   const [decanatos, setDecanatos] = useState(undefined);
   const [decanatoSelected, setDecanatoSelected] = useState(undefined);
-
-  var { onAdd, zona, decanato } = props.route.params;
+  const [lista_oficios, setListaOficios] = useState([]);
+  const { onAdd, zona, decanato } = props.route.params;
 
   props.navigation.setOptions({
     headerTitle: 'Registro Acompañante',
@@ -67,12 +73,12 @@ export default (props) => {
     }
   }, []);
 
-  var doRegister = () => {
+  const doRegister = () => {
     if (loading) {
       return;
     }
 
-    var data = {
+    const data = {
       nombre: name,
       apellido_paterno: apPaterno,
       apellido_materno: apMaterno,
@@ -92,7 +98,7 @@ export default (props) => {
       },
     };
 
-    var { valid, prompt } = Util.validateForm(data, {
+    const { valid, prompt } = Util.validateForm(data, {
       nombre: {
         type: 'minLength',
         value: 3,
@@ -163,7 +169,10 @@ export default (props) => {
         setLoading(false);
 
         if (!done) {
-          return Alert.alert('Error', 'Hubo un error agregando el acompañante.');
+          return Alert.alert(
+            'Error',
+            'Hubo un error agregando el acompañante.'
+          );
         }
 
         onAdd(done);
@@ -173,9 +182,9 @@ export default (props) => {
       .catch((err) => {
         setLoading(false);
 
-        if (err.code == 999) {
+        if (err.code === 999) {
           Alert.alert('Error', 'No tienes acceso a esta acción.');
-        } else if (err.code == 1283) {
+        } else if (err.code === 1283) {
           if (zona || decanato) {
             Alert.alert(
               'Error',
@@ -188,7 +197,7 @@ export default (props) => {
                 ' ya tiene un acompañante.'
             );
           }
-        } else if (err.code == 623) {
+        } else if (err.code === 623) {
           Alert.alert(
             'Error',
             'Ya existe un usuario con ese correo electrónico.'
@@ -198,6 +207,10 @@ export default (props) => {
         }
       });
   };
+
+  React.useEffect(() => {
+    API.getOficios().then(setListaOficios);
+  }, []);
 
   const renderSubheader = () => {
     if (!zona && !decanato) {
@@ -272,18 +285,8 @@ export default (props) => {
       <Picker
         name="Oficio"
         required
-        items={[
-          { label: 'Ninguno', value: 'Ninguno' },
-          { label: 'Plomero', value: 'Plomero' },
-          { label: 'Electricista', value: 'Electricista' },
-          { label: 'Carpintero', value: 'Carpintero' },
-          { label: 'Albañil', value: 'Albañil' },
-          { label: 'Pintor', value: 'Pintor' },
-          { label: 'Mecánico', value: 'Mecánico' },
-          { label: 'Músico', value: 'Músico' },
-          { label: 'Chofer', value: 'Chofer' },
-        ]}
-        onValueChange={setOficio}
+        items={lista_oficios}
+        onValueChange={(oficio = 'Ninguno') => setOficio(oficio.label)}
       />
 
       {zonas || decanatos ? (

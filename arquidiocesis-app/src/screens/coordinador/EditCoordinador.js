@@ -12,37 +12,40 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
-  var { onEdit, persona } = props.route.params;
+  const { onEdit, persona } = props.route.params;
 
-  var bd = moment.unix(persona.fecha_nacimiento._seconds);
+  let bd = moment.unix(persona.fecha_nacimiento._seconds);
   if (!bd.isValid()) bd = moment();
 
-  var [identificador, setIdentificador] = useState(
+  const [identificador, setIdentificador] = useState(
     persona.identificador || undefined
   );
-  var [loading, setLoading] = useState(false);
-  var [name, setName] = useState(persona.nombre);
-  var [apPaterno, setApPaterno] = useState(persona.apellido_paterno);
-  var [apMaterno, setApMaterno] = useState(persona.apellido_materno);
-  var [birthday, setBirthday] = useState(bd.format('YYYY-MM-DD'));
-  var [gender, setGender] = useState(false);
-  var [estadoCivil, setEstadoCivil] = useState(false);
-  var [domicilio, setDomicilio] = useState(persona.domicilio.domicilio);
-  var [colonia, setColonia] = useState(persona.domicilio.colonia);
-  var [municipio, setMunicipio] = useState(persona.domicilio.municipio);
-  var [phoneHome, setPhoneHome] = useState(persona.domicilio.telefono_casa);
-  var [phoneMobile, setPhoneMobile] = useState(persona.domicilio.telefono_movil);
-  var [escolaridad, setEscolaridad] = useState(false);
-  var [oficio, setOficio] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(persona.nombre);
+  const [apPaterno, setApPaterno] = useState(persona.apellido_paterno);
+  const [apMaterno, setApMaterno] = useState(persona.apellido_materno);
+  const [birthday, setBirthday] = useState(bd.format('YYYY-MM-DD'));
+  const [gender, setGender] = useState(false);
+  const [estadoCivil, setEstadoCivil] = useState(false);
+  const [domicilio, setDomicilio] = useState(persona.domicilio.domicilio);
+  const [colonia, setColonia] = useState(persona.domicilio.colonia);
+  const [municipio, setMunicipio] = useState(persona.domicilio.municipio);
+  const [phoneHome, setPhoneHome] = useState(persona.domicilio.telefono_casa);
+  const [phoneMobile, setPhoneMobile] = useState(
+    persona.domicilio.telefono_movil
+  );
+  const [escolaridad, setEscolaridad] = useState(false);
+  const [oficio, setOficio] = useState(false);
+  const [lista_oficios, setListaOficios] = useState([]);
 
   props.navigation.setOptions({
     headerTitle: 'Editar Coordinador',
   });
 
-  var doRegister = () => {
+  const doRegister = () => {
     if (loading) return;
 
-    var data = {
+    const data = {
       identificador,
       nombre: name,
       apellido_paterno: apPaterno,
@@ -61,7 +64,7 @@ export default (props) => {
       },
     };
 
-    var { valid, prompt } = Util.validateForm(data, {
+    const { valid, prompt } = Util.validateForm(data, {
       identificador: {
         type: 'empty',
         prompt: 'Favor de introducir el identificador del coordinador.',
@@ -112,7 +115,7 @@ export default (props) => {
         console.log(err);
         setLoading(false);
 
-        if (err.code == 999) {
+        if (err.code === 999) {
           props.navigation.goBack();
           return Alert.alert('Error', 'No tienes acceso a esta acción.');
         }
@@ -128,22 +131,22 @@ export default (props) => {
       });
   };
 
-  var formatDate = (a) => {
-    var f = moment(a, 'YYYY-MM-DD').format('MMMM DD, YYYY');
-    return f.charAt(0).toUpperCase() + f.substr(1);
-  };
+  // const formatDate = (a) => {
+  //   const f = moment(a, 'YYYY-MM-DD').format('MMMM DD, YYYY');
+  //   return f.charAt(0).toUpperCase() + f.substr(1);
+  // };
 
-  var getEstadoCivil = () => {
+  const getEstadoCivil = () => {
     return ['Soltero', 'Casado', 'Viudo', 'Unión Libre', 'Divorciado'].indexOf(
       persona.estado_civil
     );
   };
 
-  var getGenero = () => {
+  const getGenero = () => {
     return ['Masculino', 'Femenino', 'Sin especificar'].indexOf(persona.sexo);
   };
 
-  var getEscolaridad = () => {
+  const getEscolaridad = () => {
     return [
       'Ninguno',
       'Primaria',
@@ -154,19 +157,19 @@ export default (props) => {
     ].indexOf(persona.escolaridad);
   };
 
-  var getOficio = () => {
-    return [
-      'Ninguno',
-      'Plomero',
-      'Electricista',
-      'Carpintero',
-      'Albañil',
-      'Pintor',
-      'Mecánico',
-      'Músico',
-      'Chofer',
-    ].indexOf(persona.oficio);
+  const getOficio = () => {
+    return lista_oficios.length > 0
+      ? lista_oficios?.findIndex((val) => {
+          return val.label === persona.oficio;
+        })
+      : 0;
   };
+
+  React.useEffect(() => {
+    if (persona) {
+      API.getOficios().then(setListaOficios);
+    }
+  }, [persona]);
 
   return (
     <KeyboardAwareScrollView style={styles.loginContainer} bounces={true}>
@@ -193,7 +196,7 @@ export default (props) => {
         onChangeText={setApMaterno}
       />
       <DatePicker
-        onDateChange={(d) => setBirthday(b)}
+        onDateChange={(d) => setBirthday(d)}
         date={birthday}
         name="Fecha de nacimiento"
       />
@@ -229,18 +232,8 @@ export default (props) => {
       <Picker
         name="Oficio"
         required
-        items={[
-          'Ninguno',
-          'Plomero',
-          'Electricista',
-          'Carpintero',
-          'Albañil',
-          'Pintor',
-          'Mecánico',
-          'Músico',
-          'Chofer',
-        ]}
-        onValueChange={setOficio}
+        items={lista_oficios}
+        onValueChange={(oficio = 'Ninguno') => setOficio(oficio.label)}
         select={getOficio()}
       />
 
