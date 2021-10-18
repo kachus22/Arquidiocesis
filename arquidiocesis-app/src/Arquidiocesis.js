@@ -77,6 +77,8 @@ import {
   Zona,
   ChatChannelPosts,
   RegistroParroco,
+  Calendar,
+  ZonasList,
 } from './screens';
 import { useDeepLinking } from './navigation/DeepLinking';
 
@@ -118,14 +120,29 @@ function Home({ navigation, route }) {
       </TouchableOpacity>
     ),
     headerRight: () => (
-      <TouchableOpacity onPress={() => navigation.navigate('Grupos')}>
-        <View
-          style={{
-            marginRight: 16,
-          }}>
-          <FontAwesome5 name="comment-dots" solid size={26} color="white" />
-        </View>
-      </TouchableOpacity>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+          width: 120,
+        }}>
+        <TouchableOpacity onPress={() => navigation.navigate('Calendario')}>
+          <View
+            style={{
+              marginRight: 16,
+            }}>
+            <FontAwesome5 name="calendar" solid size={26} color="white" />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Grupos')}>
+          <View
+            style={{
+              marginRight: 16,
+            }}>
+            <FontAwesome5 name="comment-dots" solid size={26} color="white" />
+          </View>
+        </TouchableOpacity>
+      </View>
     ),
     headerTitle: 'Arquidiocesis',
   });
@@ -203,6 +220,7 @@ function App({ user, logout }) {
         />
         <Stack.Screen name="AsistenciaGrupo" component={AsistenciaGrupo} />
         <Stack.Screen name="Decanato" component={Decanato} />
+        <Stack.Screen name="ZonasList" component={ZonasList} />
         <Stack.Screen name="Zona" component={Zona} />
         <Stack.Screen name="RegistroParroquia" component={RegistroParroquia} />
         <Stack.Screen name="RegistroMiembro" component={RegistroMiembro} />
@@ -286,6 +304,8 @@ function App({ user, logout }) {
         <Stack.Screen name="Objetivos" component={Objetivos} />
         <Stack.Screen name="ObjetivosDelAño" component={ObjetivosDelAño} />
         <Stack.Screen name="ObjetivosDecanato" component={ObjetivosDecanato} />
+
+        <Stack.Screen name="Calendario" component={Calendar} />
 
         <Stack.Screen name="CrearGrupo" component={CrearGrupo} />
         <Stack.Screen name="CanalesGrupo" component={CanalesGrupo} />

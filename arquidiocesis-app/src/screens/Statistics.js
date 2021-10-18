@@ -12,24 +12,30 @@ import { API } from '../lib';
 import { ErrorView } from '../components';
 import { RefreshControl } from 'react-native-web-refresh-control';
 import CanvasJSReact from '../lib/canvasjs.react';
+import { Picker } from '@react-native-picker/picker';
 
-var CanvasJS = CanvasJSReact.CanvasJS;
-var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+const CanvasJS = CanvasJSReact.CanvasJS;
+const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 export default (props) => {
-  var [stats, setStats] = useState(false);
-  var [error, setError] = useState(false);
-  var [refreshing, setRefreshing] = useState(false);
-  var [verAlergias, setVerAlergias] = useState(false);
-  var [verDiscapacidad, setVerDiscapacidad] = useState(false);
-  var [servicioMedico, setServicioMedico] = useState({});
-  var [alergias, setAlergias] = useState({});
-  var [descAlergias, setDescAlergias] = useState([]);
-  var [problemasSalud, setProblemasSalud] = useState({});
-  var [seguridadSocial, setSeguridadsocial] = useState({});
-  var [educacion, setEducacion] = useState({});
-  var [discapacidad, setDiscapacidad] = useState({});
-  var [descDiscapacidad, setDescDiscapacidad] = useState([]);
+  const [stats, setStats] = useState(false);
+  const [error, setError] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [zones, setZones] = useState(false);
+  const [decanatos, setDecanatos] = useState(false);
+  const [filteredDecanatos, setFilteredDecanatos] = useState(false);
+  const [selectedZone, setSelectedZone] = useState('');
+  const [selectedDecanato, setSelectedDecanato] = useState('');
+  const [verAlergias, setVerAlergias] = useState(false);
+  const [verDiscapacidad, setVerDiscapacidad] = useState(false);
+  const [servicioMedico, setServicioMedico] = useState({});
+  const [alergias, setAlergias] = useState({});
+  const [descAlergias, setDescAlergias] = useState([]);
+  const [problemasSalud, setProblemasSalud] = useState({});
+  const [seguridadSocial, setSeguridadsocial] = useState({});
+  const [educacion, setEducacion] = useState({});
+  const [discapacidad, setDiscapacidad] = useState({});
+  const [descDiscapacidad, setDescDiscapacidad] = useState([]);
 
   props.navigation.setOptions({
     headerTitle: 'Estadísticas de miembros',
@@ -44,14 +50,39 @@ export default (props) => {
         setError(false);
       })
       .catch((err) => {
+        console.log(err);
         setRefreshing(false);
         setError(true);
       });
+    API.getZonas()
+      .then((zonas) => {
+        setZones(zonas);
+        setRefreshing(false);
+        setError(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setRefreshing(false);
+        setError(true);
+      });
+    API.getDecanatos()
+      .then((d) => {
+        setDecanatos(d);
+        setFilteredDecanatos([]);
+        setRefreshing(false);
+        setError(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setError(true);
+        setRefreshing(false);
+      });
   }, []);
 
-  var getStats = () => {
+  const getStats = (zone, decanato) => {
     setRefreshing(true);
-    API.getStats()
+    console.log(zone, decanato);
+    API.getStats(zone, decanato)
       .then((d) => {
         setStats(d);
         defineGraphData(d);
@@ -59,6 +90,7 @@ export default (props) => {
         setError(false);
       })
       .catch((err) => {
+        console.log(err);
         setRefreshing(false);
         setError(true);
       });
@@ -112,7 +144,7 @@ export default (props) => {
           indexLabelFontSize: 12,
           indexLabelPlacement: 'outside',
           innerRadius: '70%',
-          yValueFormatString: '#0\'%\'',
+          yValueFormatString: "#0'%'",
           dataPoints: [
             { name: 'Privado', y: stats.servicio_medico.privado },
             { name: 'Público', y: stats.servicio_medico.publico },
@@ -148,7 +180,7 @@ export default (props) => {
         {
           type: 'doughnut',
           showInLegend: false,
-          yValueFormatString: '#0\'%\'',
+          yValueFormatString: "#0'%'",
           startAngle: 90,
           innerRadius: '85%',
           dataPoints: [
@@ -242,7 +274,7 @@ export default (props) => {
           indexLabelFontSize: 12,
           indexLabelPlacement: 'outside',
           innerRadius: '70%',
-          yValueFormatString: '#0\'%\'',
+          yValueFormatString: "#0'%'",
           dataPoints: [
             { name: 'Pensionado', y: stats.seguridad_social.pensionado },
             { name: 'Jubilado', y: stats.seguridad_social.jubilado },
@@ -275,7 +307,7 @@ export default (props) => {
         {
           type: 'pie',
           showInLegend: true,
-          yValueFormatString: '#0\'%\'',
+          yValueFormatString: "#0'%'",
           startAngle: 90,
           legendText: '{name}: {y}',
           dataPoints: [
@@ -316,7 +348,7 @@ export default (props) => {
         {
           type: 'doughnut',
           showInLegend: false,
-          yValueFormatString: '#0\'%\'',
+          yValueFormatString: "#0'%'",
           startAngle: 90,
           innerRadius: '85%',
           dataPoints: [
@@ -329,6 +361,18 @@ export default (props) => {
 
     setDescDiscapacidad(stats.discapacidad_desc);
   }
+
+  const onChangeZone = (itemValue) => {
+    setSelectedZone(itemValue);
+    setSelectedDecanato('');
+    setFilteredDecanatos(decanatos.filter((d) => d.zona === itemValue));
+    getStats(itemValue);
+  };
+
+  const onChangeDecanato = (itemValue) => {
+    setSelectedDecanato(itemValue);
+    getStats(selectedZone, itemValue);
+  };
 
   return (
     <ScrollView
@@ -356,6 +400,43 @@ export default (props) => {
         </View>
       ) : (
         <View>
+          <View style={styles.pickerView}>
+            <Text style={styles.pickerText}>Zona</Text>
+            <Picker
+              style={styles.pickerStyle}
+              itemStyle={styles.pickerItemStyle}
+              selectedValue={selectedZone}
+              onValueChange={onChangeZone}>
+              <Picker.Item label="Todos" value="" />
+              {zones &&
+                zones.map((zone) => (
+                  <Picker.Item
+                    key={zone.id}
+                    label={zone.nombre}
+                    value={zone.id}
+                  />
+                ))}
+            </Picker>
+          </View>
+          <View style={styles.pickerView}>
+            <Text style={styles.pickerText}>Decanato</Text>
+            <Picker
+              style={styles.pickerStyle}
+              itemStyle={styles.pickerItemStyle}
+              selectedValue={selectedDecanato}
+              onValueChange={onChangeDecanato}>
+              <Picker.Item label="Todos" value="" />
+              {filteredDecanatos &&
+                filteredDecanatos.map((decanato) => (
+                  <Picker.Item
+                    key={decanato.id}
+                    label={decanato.nombre}
+                    value={decanato.id}
+                  />
+                ))}
+            </Picker>
+          </View>
+
           <CanvasJSChart id="graph" options={servicioMedico} />
           <CanvasJSChart options={alergias} />
           <View style={styles.switchContainer}>
@@ -375,7 +456,7 @@ export default (props) => {
                 renderItem={({ item, index }) => (
                   <View
                     style={{
-                      backgroundColor: index % 2 == 0 ? '#FFFFFF' : '#F2F2F2',
+                      backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F2F2F2',
                     }}>
                     <Text style={styles.listItem}>{item}</Text>
                   </View>
@@ -404,7 +485,7 @@ export default (props) => {
                 renderItem={({ item, index }) => (
                   <View
                     style={{
-                      backgroundColor: index % 2 == 0 ? '#FFFFFF' : '#F2F2F2',
+                      backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#F2F2F2',
                     }}>
                     <Text style={styles.listItem}>{item}</Text>
                   </View>
@@ -419,6 +500,23 @@ export default (props) => {
 };
 
 const styles = StyleSheet.create({
+  pickerView: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  pickerText: {
+    fontSize: 22,
+    marginRight: 15,
+    color: 'grey',
+    fontWeight: '500',
+  },
+  pickerStyle: {
+    width: 200,
+    height: 44,
+  },
+  pickerItemStyle: { height: 44 },
   sectionText: {
     fontSize: 14,
     color: 'gray',
