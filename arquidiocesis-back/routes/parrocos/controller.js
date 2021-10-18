@@ -75,7 +75,6 @@ exports.getOne = async (firestore, req, res) => {
       });
 
     const parroco = snapshot.data();
-    console.log(parroco);
     parroco.id = snapshot.id;
 
     return res.send({
