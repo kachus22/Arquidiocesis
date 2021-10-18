@@ -79,6 +79,7 @@ import {
   RegistroParroco,
   Calendar,
   ZonasList,
+  Alertas,
 } from './screens';
 import { useDeepLinking } from './navigation/DeepLinking';
 
@@ -126,6 +127,14 @@ function Home({ navigation, route }) {
           justifyContent: 'space-evenly',
           width: 120,
         }}>
+        <TouchableOpacity onPress={() => navigation.navigate('Alertas')}>
+          <View
+            style={{
+              marginRight: 16,
+            }}>
+            <FontAwesome5 name="bell" solid size={26} color="white" />
+          </View>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Calendario')}>
           <View
             style={{

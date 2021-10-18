@@ -30,6 +30,8 @@ import EditEvento from './calendar/EditEvento';
 import Parrocos from './parroco/Parrocos';
 import RegistroParroco from './parroco/RegistroParroco';
 
+import Alertas from './alertas/Alertas';
+
 import Grupos from './grupos/Grupos';
 import RegistroGrupo from './grupos/RegistroGrupo';
 import Grupo from './grupos/Grupo';
