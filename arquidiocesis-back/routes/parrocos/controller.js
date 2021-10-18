@@ -20,6 +20,7 @@ const admin = require('firebase-admin');
  * @param {String} res.data[].nombre
  * @param {String} res.data[].apellido_paterno
  * @param {String} res.data[].apellido_materno
+ * @param {String} res.data[].parroquia
  */
 exports.getAll = async (firestore, req, res) => {
   try {
@@ -29,6 +30,7 @@ exports.getAll = async (firestore, req, res) => {
         id: doc.id,
         nombre: doc.data().nombre,
         apellido_paterno: doc.data().apellido_paterno,
+        parroquia: doc.data().parroquia,
         apellido_materno: doc.data().apellido_materno,
       };
     });
@@ -73,12 +75,9 @@ exports.getOne = async (firestore, req, res) => {
       });
 
     const parroco = snapshot.data();
+    console.log(parroco);
     parroco.id = snapshot.id;
-    // TODO: (kike) Ask what it's going to be associated to parroco.
-    // parroco.grupos = [];
-    // parroco.decanatos = [];
-    // parroco.parroquias = [];
-    // parroco.capillas = [];
+
     return res.send({
       error: false,
       data: parroco,
@@ -103,7 +102,7 @@ exports.getOne = async (firestore, req, res) => {
  * @param {String} req.body.password
  * @param {String} req.body.fecha_nacimiento
  * @param {String} req.body.fecha_ordenamiento
- * @param {String} req.body.telefono_movil
+ * @param {String} req.body.parroquia
  *
  * @param {JSON} res - Status 200
  * @param {Bool} res.error - True if there was an error else false
@@ -116,6 +115,7 @@ exports.getOne = async (firestore, req, res) => {
  * @param {String} res.data.fecha_nacimiento
  * @param {String} res.data.fecha_ordenamiento
  * @param {String} res.data.telefono_movil
+ * @param {String} res.data.parroquia
  */
 exports.add = async (firestore, req, res) => {
   const {
@@ -127,6 +127,7 @@ exports.add = async (firestore, req, res) => {
     fecha_nacimiento,
     fecha_ordenamiento,
     telefono_movil,
+    parroquia = '',
   } = req.body;
 
   if (!req.user.admin) {
@@ -180,6 +181,7 @@ exports.add = async (firestore, req, res) => {
       fecha_nacimiento: fn,
       fecha_ordenamiento: fo,
       telefono_movil,
+      parroquia,
     };
 
     const newLogin = {
@@ -227,6 +229,7 @@ exports.add = async (firestore, req, res) => {
  * @param {String} req.body.fecha_nacimiento
  * @param {String} req.body.fecha_ordenamiento
  * @param {String} req.body.telefono_movil
+ * @param {String} req.body.parroquia
  *
  * @param {JSON} res - Status 200
  * @param {Bool} res.error - True if there was an error else false
@@ -241,6 +244,7 @@ exports.edit = async (firestore, req, res) => {
     fecha_nacimiento,
     fecha_ordenamiento,
     telefono_movil,
+    parroquia = '',
   } = req.body;
 
   if (!req.user.admin) {
@@ -290,8 +294,11 @@ exports.edit = async (firestore, req, res) => {
       fecha_nacimiento: fn,
       fecha_ordenamiento: fo,
       telefono_movil,
+      parroquia,
     };
-    await ref.update(editParroco);
+
+    await ref.update(editParroco); // llamada asincrona para editar el documento de parroco.
+
     return res.send({
       error: false,
       data: true,
@@ -299,7 +306,7 @@ exports.edit = async (firestore, req, res) => {
   } catch (e) {
     return res.send({
       error: true,
-      message: 'Error inesperado al agregar párroco.',
+      message: 'Error inesperado al editar al párroco.',
     });
   }
 };
