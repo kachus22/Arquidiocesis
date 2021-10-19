@@ -142,4 +142,5 @@ export {
   ChatChannelPosts,
   DetalleParroco,
   EditParroco,
+  Alertas,
 };

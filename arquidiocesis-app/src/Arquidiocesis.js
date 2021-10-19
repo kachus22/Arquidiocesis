@@ -319,6 +319,7 @@ function App({ user, logout }) {
         <Stack.Screen name="ObjetivosDecanato" component={ObjetivosDecanato} />
 
         <Stack.Screen name="Calendario" component={Calendar} />
+        <Stack.Screen name="Alertas" component={Alertas} />
 
         <Stack.Screen name="CrearGrupo" component={CrearGrupo} />
         <Stack.Screen name="CanalesGrupo" component={CanalesGrupo} />
