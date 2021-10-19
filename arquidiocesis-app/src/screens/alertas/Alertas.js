@@ -12,22 +12,18 @@ export default () => {
   // var [data, setData] = useState(false);
   // var [refreshing, setRefreshing] = useState(false);
   // var [error, setError] = useState(false);
-  const alert = {
-    name: '',
-    description: '',
-    date: '',
-  };
-  const alert1 = Object.create(alert);
-  const alert2 = Object.create(alert);
-
-  alert1.name = 'alerta 1';
-  alert1.description = 'descripción corta';
-  alert1.date = '18/10/21';
-  alert2.name = 'alerta 2';
-  alert2.description = 'descripción corta';
-  alert2.date = '17/10/21';
-
-  const alerts = [alert1, alert2];
+  const alerts = [
+    {
+      name: 'alerta 1',
+      description: 'descripción corta',
+      date: '18/10/21',
+    },
+    {
+      name: 'alerta 2',
+      description: 'descripción corta',
+      date: '17/10/21',
+    },
+  ];
 
   const renderItem = (alerts) => {
     return (
