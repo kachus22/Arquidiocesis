@@ -5,11 +5,11 @@ Descripción: Pantalla para ver la información personal de los párrocos en el 
 */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { API } from '../../lib';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { RefreshControl } from 'react-native-web-refresh-control';
-import { Input, Alert, Item, List, LoadingView } from '../../components';
+import { Input, Alert, Item, LoadingView } from '../../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
@@ -22,6 +22,7 @@ export default (props) => {
   var [user, setUser] = useState(false);
   var [refreshing, setRefreshing] = useState(false);
   var [error, setError] = useState(false);
+  const [parroquia, setParroquia] = useState({ nombre: 'parroquia' });
 
   props.navigation.setOptions({
     headerStyle: {
@@ -54,8 +55,20 @@ export default (props) => {
     API.getParroco(props.route.params.persona.id, ref)
       .then((data) => {
         setPersona(data);
-        setError(false);
-        setRefreshing(false);
+        console.log(data);
+
+        API.getParroquias()
+          .then((data2) => {
+            setParroquia(data2.find((x) => x.id === data.parroquia));
+            console.log(data.parroquia);
+            setRefreshing(false);
+            setError(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setRefreshing(false);
+            setError(false);
+          });
       })
       .catch((err) => {
         console.log(error);
@@ -85,7 +98,7 @@ export default (props) => {
             })
             .catch((err) => {
               setDeleting(false);
-              alert('Hubo un error eliminando el párrocoS.');
+              alert('Hubo un error eliminando el párrocos.');
             });
         },
       },
@@ -101,6 +114,7 @@ export default (props) => {
   var editParroco = () => {
     props.navigation.navigate('EditParroco', {
       persona,
+      parr: parroquia,
       onEdit: (data) => {
         var p = { ...persona };
         for (var i in data) {
@@ -122,16 +136,6 @@ export default (props) => {
     return f.charAt(0).toUpperCase() + f.substr(1);
   };
 
-  var gotoParroquia = (i) => {
-    props.navigation.navigate('Parroquia', i);
-  };
-
-  var gotoGroup = (i) => {
-    props.navigation.navigate('Grupo', {
-      grupo: i,
-    });
-  };
-
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={{ paddingBottom: 50 }}
@@ -141,33 +145,7 @@ export default (props) => {
           onRefresh={() => getParroco(true)}
         />
       }>
-      {persona.grupos && persona.grupos.length > 0 && (
-        <View>
-          <Text style={styles.sectionText}>GRUPOS</Text>
-          <List
-            data={persona.grupos}
-            sort={'nombre'}
-            onSelect={gotoGroup}
-            contentStyle={{ paddingBottom: 0 }}
-          />
-        </View>
-      )}
-
-      {persona.parroquias && persona.parroquias.length > 0 && (
-        <View>
-          <Text style={styles.sectionText}>PARROQUIAS</Text>
-          <List
-            data={persona.parroquias}
-            sort={'nombre'}
-            onSelect={gotoParroquia}
-            contentStyle={{ paddingBottom: 0 }}
-          />
-        </View>
-      )}
       <View style={{ padding: 15 }}>
-        {persona.identificador && (
-          <Input name="Identificador" value={persona.identificador} readonly />
-        )}
         <Input name="Correo Electrónico" value={persona.email} readonly />
         <Input name="Nombre" value={persona.nombre} readonly />
         <Input
@@ -187,6 +165,9 @@ export default (props) => {
         />
 
         <Input name="Teléfono Móvil" value={persona.telefono_movil} readonly />
+        {parroquia && (
+          <Input value={parroquia.nombre} name={'Parroquia'} readonly />
+        )}
       </View>
 
       {user && (user.type === 'admin' || user.type === 'superadmin') && (
@@ -202,20 +183,3 @@ export default (props) => {
     </KeyboardAwareScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  section: {
-    fontSize: 20,
-    fontWeight: '600',
-    textAlign: 'center',
-    color: 'grey',
-    marginBottom: 10,
-    marginTop: 20,
-  },
-  sectionText: {
-    fontSize: 14,
-    color: 'gray',
-    marginVertical: 10,
-    paddingLeft: 15,
-  },
-});
