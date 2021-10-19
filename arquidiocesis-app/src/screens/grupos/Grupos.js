@@ -4,23 +4,17 @@ Usuario con acceso: Admin, acompañante, coordinador
 Descripción: Pantalla para ver los grupos HEMA
 */
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  ScrollView,
-} from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { RefreshControl } from 'react-native-web-refresh-control';
 import { AlphabetList, ErrorView, Button } from '../../components';
 import { API } from '../../lib';
 
 export default (props) => {
-  var [user, setUser] = useState(null);
-  var [data, setData] = useState(false);
-  var [refreshing, setRefreshing] = useState(false);
-  var [error, setError] = useState(false);
-
+  const [user, setUser] = useState(null);
+  const [data, setData] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(false);
+  console.log('Gruposs');
   useEffect(() => {
     API.getUser().then(setUser);
     API.getGrupos()
@@ -30,12 +24,13 @@ export default (props) => {
         setError(false);
       })
       .catch((err) => {
+        console.log(err);
         setRefreshing(false);
         setError(true);
       });
   }, []);
 
-  var getGrupos = () => {
+  const getGrupos = () => {
     setRefreshing(true);
     setError(false);
     API.getGrupos(true)
@@ -45,6 +40,7 @@ export default (props) => {
         setRefreshing(false);
       })
       .catch((err) => {
+        console.log(err);
         setRefreshing(false);
         setError(true);
       });
@@ -77,19 +73,19 @@ export default (props) => {
     );
   }
 
-  var onPress = (item) => {
+  const onPress = (item) => {
     props.navigation.navigate('Grupo', {
       grupo: item,
       onDelete: (id) => {
-        setData((d) => d.filter((a) => a.id != id));
+        setData((d) => d.filter((a) => a.id !== id));
       },
       onEdit: (id, new_grupo) => {
-        setData([...data.filter((a) => a.id != id), new_grupo]);
+        setData([...data.filter((a) => a.id !== id), new_grupo]);
       },
     });
   };
 
-  var addGrupo = () => {
+  const addGrupo = () => {
     props.navigation.navigate('RegistroGrupo', {
       onAdd: (p) => {
         if (!data) return;
@@ -98,7 +94,7 @@ export default (props) => {
     });
   };
 
-  var renderItem = (data) => {
+  const renderItem = (data) => {
     return (
       <View>
         <Text style={{ fontSize: 18 }} numberOfLines={1}>
@@ -139,7 +135,7 @@ export default (props) => {
         <RefreshControl refreshing={refreshing} onRefresh={getGrupos} />
       }>
       <View>
-        {user && (user.type == 'admin' || user.type == 'superadmin') ? (
+        {user && (user.type === 'admin' || user.type === 'superadmin') ? (
           <Button
             text="Agregar grupo"
             style={{ width: 250, alignSelf: 'center' }}
@@ -172,14 +168,3 @@ export default (props) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  testText: {
-    fontSize: 20,
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

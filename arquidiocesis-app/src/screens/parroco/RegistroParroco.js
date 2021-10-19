@@ -3,15 +3,24 @@ Nombre: RegistroPárroco.js
 Usuario con acceso: 
 Descripción: Pantalla para registrar un nuevo párroco en el sistema
 */
-import React, { useState } from 'react';
-import { Text, StyleSheet } from 'react-native';
-import { Input, Button, Alert, DatePicker } from '../../components';
+import React, { useState, useEffect } from 'react';
+import { Text, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  Input,
+  Button,
+  Alert,
+  DatePicker,
+  PickerScreen,
+} from '../../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { API, Util } from '../../lib';
 import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
+  const [listParroquias, setListParroquias] = useState(false);
+  const [parroquia, setParroquia] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [apPaterno, setApPaterno] = useState('');
@@ -39,6 +48,7 @@ export default (props) => {
       telefono_movil: phoneMobile,
       email: email,
       password: password,
+      parroquia: parroquia ? parroquia.id : null,
     };
 
     const { valid, prompt } = Util.validateForm(data, {
@@ -100,6 +110,19 @@ export default (props) => {
       });
   };
 
+  useEffect(() => {
+    API.getParroquias()
+      .then((data) => {
+        const parroquias = { Parroquias: data };
+        setListParroquias(parroquias);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <KeyboardAwareScrollView style={styles.loginContainer} bounces={true}>
       <Text style={styles.header}>Registrar Párroco</Text>
@@ -134,6 +157,19 @@ export default (props) => {
         keyboard={'phone-pad'}
       />
 
+      {listParroquias ? (
+        <PickerScreen
+          value={parroquia ? parroquia.nombre : 'Elegir Parroquia'}
+          name="Parroquia"
+          navigation={props.navigation}
+          data={listParroquias}
+          organize={false}
+          onSelect={setParroquia}
+        />
+      ) : (
+        <ActivityIndicator style={{ height: 80 }} />
+      )}
+
       <Text style={styles.section}>Credenciales</Text>
       <Input
         name="Correo electrónico"
@@ -152,6 +188,7 @@ export default (props) => {
         textContentType={'password'}
         password
       />
+
       <Button text="Registrar" loading={loading} onPress={doRegister} />
     </KeyboardAwareScrollView>
   );
