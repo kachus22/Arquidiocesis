@@ -1378,6 +1378,40 @@ async function getParrocos(force = false) {
 }
 
 /**
+ * Get a parroco from id.
+ * @param {string} id The parroco id.
+ * @param {boolean} force Bypass the cache
+ */
+async function getParroco(id, force = false) {
+  if (!force) {
+    const parrocoCache = Cache.getParroco(id);
+    if (parrocoCache) {
+      return parrocoCache;
+    }
+  }
+
+  const p = await get('parrocos/' + id);
+  if (p.error) throw p;
+  else {
+    Cache.setParroco(p.data);
+    return p.data;
+  }
+}
+
+/**
+ * Edit a parroco data.
+ * @param {string} id The parroco to edit
+ * @param {object} data The new data of the parroco.
+ */
+async function editParroco(id, data) {
+  const res = await post('parrocos/' + id, {
+    ...data,
+  });
+  if (res.error) throw res;
+  else return res.data;
+}
+
+/**
  * Format a GET url and add the token to the params.
  * Used for reporte downloading.
  * @param {string} url The endpoint of the url
@@ -1470,4 +1504,6 @@ export default {
   editObjective,
   getParrocos,
   registerParroco,
+  getParroco,
+  editParroco,
 };
