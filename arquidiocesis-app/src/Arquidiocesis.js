@@ -81,6 +81,7 @@ import {
   ZonasList,
   Alertas,
   DetalleParroco,
+  EditParroco,
 } from './screens';
 import { useDeepLinking } from './navigation/DeepLinking';
 
@@ -343,6 +344,7 @@ function App({ user, logout }) {
         />
 
         <Stack.Screen name="RegistroParroco" component={RegistroParroco} />
+        <Stack.Screen name="EditParroco" component={EditParroco} />
       </Stack.Navigator>
     </NavigationContainer>
   );

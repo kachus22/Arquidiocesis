@@ -1,10 +1,10 @@
 /* 
-Nombre: RegistroPárroco.js
-Usuario con acceso: 
-Descripción: Pantalla para registrar un nuevo párroco en el sistema
+Nombre: EditParroco.js
+Usuario con acceso: Admin
+Descripción: Pantalla para editar la información personal de los párrocos en el sistema
 */
-import React, { useState, useEffect } from 'react';
-import { Text, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, ActivityIndicator } from 'react-native';
 import {
   Input,
   Button,
@@ -18,22 +18,24 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
-  const [listParroquias, setListParroquias] = useState(false);
-  const [parroquia, setParroquia] = useState(false);
+  const { onEdit, persona, parr } = props.route.params;
+
+  let bd = moment.unix(persona.fecha_nacimiento._seconds);
+  if (!bd.isValid()) bd = moment();
 
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [apPaterno, setApPaterno] = useState('');
-  const [apMaterno, setApMaterno] = useState('');
-  const [email, setEmail] = useState('');
-  const [birthday, setBirthday] = useState(moment().format('YYYY-MM-DD'));
-  const [orderDate, setOrderDate] = useState(moment().format('YYYY-MM-DD'));
-  const [phoneMobile, setPhoneMobile] = useState('');
-  const [password, setPassword] = useState('');
-  const onAdd = props.route.params.onAdd;
+  const [name, setName] = useState(persona.nombre);
+  const [apPaterno, setApPaterno] = useState(persona.apellido_paterno);
+  const [apMaterno, setApMaterno] = useState(persona.apellido_materno);
+  const [birthday, setBirthday] = useState(bd.format('YYYY-MM-DD'));
+
+  const [phoneMobile, setPhoneMobile] = useState(persona.telefono_movil);
+
+  const [listParroquias, setListParroquias] = useState(false);
+  const [parroquia, setParroquia] = useState(parr);
 
   props.navigation.setOptions({
-    headerTitle: 'Registro Parroco',
+    headerTitle: 'Editar Párroco',
   });
 
   const doRegister = () => {
@@ -44,10 +46,7 @@ export default (props) => {
       apellido_paterno: apPaterno,
       apellido_materno: apMaterno,
       fecha_nacimiento: birthday,
-      fecha_ordenamiento: orderDate,
       telefono_movil: phoneMobile,
-      email: email,
-      password: password,
       parroquia: parroquia ? parroquia.id : null,
     };
 
@@ -65,52 +64,46 @@ export default (props) => {
         type: 'empty',
         prompt: 'Favor de introducir la fecha de nacimiento.',
       },
-      fecha_ordenamiento: {
-        type: 'empty',
-        prompt: 'Favor de introducir la fecha de ordenamiento.',
-      },
-      email: {
-        type: 'empty',
-        prompt: 'Favor de introducir el email',
-      },
-
-      password: {
-        type: 'minLength',
-        value: 5,
-        prompt: 'Favor de introducir la contraseña, minimo 5 caracteres',
-      },
     });
 
     if (!valid) {
       return Alert.alert('Error', prompt);
     }
-
     setLoading(true);
-    API.registerParroco(data)
-      .then((new_member) => {
+
+    API.editParroco(persona.id, data)
+      .then((done) => {
         setLoading(false);
-        if (!new_member)
-          return Alert.alert('Error', 'Hubo un error registrando el párroco');
-        if (onAdd) onAdd(new_member);
-        Alert.alert('Exito', 'Se ha agregado el párroco.');
-        props.navigation.goBack();
+        if (!done)
+          return Alert.alert('Error', 'Hubo un error editando el párroco.');
+        data.fecha_nacimiento = {
+          _seconds: moment(birthday, 'YYYY-MM-DD').unix(),
+        };
+        onEdit(data);
+        Alert.alert('Exito', 'Se ha editado el párroco.');
+        return;
       })
       .catch((err) => {
         console.log(err);
         setLoading(false);
 
+        if (err.code === 999) {
+          props.navigation.goBack();
+          return Alert.alert('Error', 'No tienes acceso a esta acción.');
+        }
+
         if (
           err.message ===
           'Ya existe un párroco con el identificador proporcionado.'
         ) {
-          Alert.alert('Error', err.message);
-        } else {
-          Alert.alert('Error', 'Hubo un error agregando al párroco.');
+          return Alert.alert('Error', err.message);
         }
+
+        return Alert.alert('Error', 'Hubo un error editando el párroco.');
       });
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     API.getParroquias()
       .then((data) => {
         const parroquias = { Parroquias: data };
@@ -121,12 +114,10 @@ export default (props) => {
         console.log(err);
         setLoading(false);
       });
-  }, []);
+  }, [persona]);
 
   return (
     <KeyboardAwareScrollView style={styles.loginContainer} bounces={true}>
-      <Text style={styles.header}>Registrar Párroco</Text>
-
       <Input name="Nombre" value={name} onChangeText={setName} required />
       <Input
         name="Apellido Paterno"
@@ -145,19 +136,12 @@ export default (props) => {
         name="Fecha de nacimiento"
       />
 
-      <DatePicker
-        onDateChange={(d) => setOrderDate(d)}
-        date={orderDate}
-        name="Fecha de ordenamiento"
-      />
-
       <Input
         name="Teléfono Móvil"
         value={phoneMobile}
         onChangeText={setPhoneMobile}
         keyboard={'phone-pad'}
       />
-
       {listParroquias ? (
         <PickerScreen
           value={parroquia ? parroquia.nombre : 'Elegir Parroquia'}
@@ -171,26 +155,7 @@ export default (props) => {
         <ActivityIndicator style={{ height: 80 }} />
       )}
 
-      <Text style={styles.section}>Credenciales</Text>
-      <Input
-        name="Correo electrónico"
-        required
-        value={email}
-        onChangeText={setEmail}
-        textContentType={'emailAddress'}
-        keyboard={'email-address'}
-      />
-      <Input
-        name="Contraseña"
-        required
-        style={{ marginTop: 10 }}
-        value={password}
-        onChangeText={setPassword}
-        textContentType={'password'}
-        password
-      />
-
-      <Button text="Registrar" loading={loading} onPress={doRegister} />
+      <Button text="Guardar" loading={loading} onPress={doRegister} />
     </KeyboardAwareScrollView>
   );
 };
@@ -205,7 +170,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loginContainer: {
-    height: '70%',
     width: '100%',
     padding: 10,
   },

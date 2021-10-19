@@ -29,7 +29,7 @@ const getall = async (firestore, req, res) => {
       .get();
     const snapshot = await firestore
       .collection('grupos')
-      .where('parroquia', '===', parroco.data().parroquia)
+      .where('parroquia', '==', parroco.data().parroquia)
       .get();
     grupos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   } else if (req.user.tipo !== 'coordinador') {
@@ -48,9 +48,9 @@ const getall = async (firestore, req, res) => {
     const pid = Array.from(
       new Set(grupos.map((a) => a.parroquia || null))
     ).filter((a) => a !== null);
-    const cid = Array.from(new Set(grupos.map((a) => a.capilla || null))).filter(
-      (a) => a !== null
-    );
+    const cid = Array.from(
+      new Set(grupos.map((a) => a.capilla || null))
+    ).filter((a) => a !== null);
 
     // Get parroquias
     const parroquias = [];
@@ -1158,8 +1158,8 @@ const getAsistenciasReport = async (firestore, req, res) => {
       d.estatus === 0
         ? 'Activo'
         : d.estatus === 1
-          ? 'Baja temporal'
-          : 'Baja definitiva',
+        ? 'Baja temporal'
+        : 'Baja definitiva',
       d.domicilio.domicilio,
       d.domicilio.colonia,
       d.domicilio.municipio,
@@ -1167,12 +1167,12 @@ const getAsistenciasReport = async (firestore, req, res) => {
       d.domicilio.telefono_casa,
       ...(d.ficha_medica
         ? [
-          d.ficha_medica.ambulancia ? 'SI' : 'NO',
-          d.ficha_medica.alergico ? 'SI' : 'NO',
-          d.ficha_medica.tipo_sangre,
-          d.ficha_medica.servicio_medico,
-          d.ficha_medica.padecimientos,
-        ]
+            d.ficha_medica.ambulancia ? 'SI' : 'NO',
+            d.ficha_medica.alergico ? 'SI' : 'NO',
+            d.ficha_medica.tipo_sangre,
+            d.ficha_medica.servicio_medico,
+            d.ficha_medica.padecimientos,
+          ]
         : ['', '', '', '', '']),
     ]);
   }
@@ -1358,7 +1358,9 @@ const dump = async (firestore, req, res) => {
       if (!a.exists) return;
       const d = a.data();
       const c = d.capilla ? capillas.find((a) => a.id === d.capilla) : null;
-      const p = d.parroquia ? parroquias.find((a) => a.id === d.parroquia) : null;
+      const p = d.parroquia
+        ? parroquias.find((a) => a.id === d.parroquia)
+        : null;
       const coord = coordinadores.find((a) => a.id === d.coordinador);
       grupos.push([
         a.id,

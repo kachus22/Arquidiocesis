@@ -30,6 +30,7 @@ import EditEvento from './calendar/EditEvento';
 import DetalleParroco from './parroco/DetalleParroco';
 import Parrocos from './parroco/Parrocos';
 import RegistroParroco from './parroco/RegistroParroco';
+import EditParroco from './parroco/EditParroco';
 
 import Alertas from './alertas/Alertas';
 
@@ -140,4 +141,5 @@ export {
   ObjetivosDecanato,
   ChatChannelPosts,
   DetalleParroco,
+  EditParroco,
 };

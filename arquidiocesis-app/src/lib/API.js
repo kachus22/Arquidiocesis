@@ -42,6 +42,32 @@ async function post(endpoint, data) {
 }
 
 /**
+ * Do a PUT request to the API server.
+ * @param {string} endpoint The endpoint to PUT
+ * @param {object} data The data to send to the endpoint
+ */
+async function put(endpoint, data) {
+  const u = await getUser();
+  if (u) {
+    if (!data) data = { token: u.token };
+    else data.token = u.token;
+  }
+  try {
+    console.log('PUT /' + endpoint);
+    const res = await axios.put(ROOT_URL + endpoint, data);
+    if (res.data && res.data.error && res.data.code === 900) {
+      logout();
+    }
+    return res.data;
+  } catch (err) {
+    return {
+      error: true,
+      message: 'No hubo conexión con el servidor.',
+    };
+  }
+}
+
+/**
  * Do a GET request to the API server.
  * @param {string} endpoint The endpoint to GET
  * @param {object} data The data to send to the endpoint
@@ -1404,7 +1430,7 @@ async function getParroco(id, force = false) {
  * @param {object} data The new data of the parroco.
  */
 async function editParroco(id, data) {
-  const res = await post('parrocos/' + id, {
+  const res = await put('parrocos/' + id + '/', {
     ...data,
   });
   if (res.error) throw res;
