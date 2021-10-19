@@ -61,6 +61,18 @@ export default (props) => {
     });
   };
 
+  var detalleParroco = (item) => {
+    props.navigation.navigate('DetalleParroco', {
+      persona: item,
+      onEdit: (id, coord) => {
+        setData([...data.filter((a) => a.id !== id), coord]);
+      },
+      onDelete: (id) => {
+        setData(data.filter((a) => a.id !== id));
+      },
+    });
+  };
+
   return (
     <ScrollView
       style={{ flex: 1 }}
@@ -103,7 +115,7 @@ export default (props) => {
         ) : (
           <AlphabetList
             data={formatData()}
-            // onSelect={detalleCoord}
+            onSelect={detalleParroco}
             scroll
             sort={'nombre_completo'}
           />
