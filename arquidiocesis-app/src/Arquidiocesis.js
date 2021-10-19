@@ -80,6 +80,7 @@ import {
   Calendar,
   ZonasList,
   Alertas,
+  DetalleParroco,
 } from './screens';
 import { useDeepLinking } from './navigation/DeepLinking';
 
@@ -252,6 +253,8 @@ function App({ user, logout }) {
           name="DetalleCoordinador"
           component={DetalleCoordinador}
         />
+
+        <Stack.Screen name="DetalleParroco" component={DetalleParroco} />
         <Stack.Screen name="DetalleEncargado" component={DetalleEncargado} />
         <Stack.Screen
           name="RegistroCapacitacion"

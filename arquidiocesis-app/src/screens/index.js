@@ -27,6 +27,7 @@ import RegistroEvento from './calendar/RegistroEvento';
 import Evento from './calendar/Evento';
 import EditEvento from './calendar/EditEvento';
 
+import DetalleParroco from './parroco/DetalleParroco';
 import Parrocos from './parroco/Parrocos';
 import RegistroParroco from './parroco/RegistroParroco';
 
@@ -138,4 +139,5 @@ export {
   ObjetivosDelAño,
   ObjetivosDecanato,
   ChatChannelPosts,
+  DetalleParroco,
 };
