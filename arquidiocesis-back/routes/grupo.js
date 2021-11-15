@@ -39,7 +39,7 @@ const getall = async (firestore, req, res) => {
   } else {
     const snapshot = await firestore
       .collection('grupos')
-      .where('coordinador', '===', req.user.id)
+      .where('coordinador', '==', req.user.id)
       .get();
     grupos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
@@ -117,19 +117,19 @@ const getForAcompanante = async (firestore, req, res) => {
 
     const zonaRef = await firestore
       .collection('zonas')
-      .where('acompanante', '===', acom)
+      .where('acompanante', '==', acom)
       .get();
 
     if (!zonaRef.empty) {
       const zonaId = zonaRef.docs[0].id;
       decanRef = await firestore
         .collection('decanatos')
-        .where('zona', '===', zonaId)
+        .where('zona', '==', zonaId)
         .get();
     } else {
       decanRef = await firestore
         .collection('decanatos')
-        .where('acompanante', '===', acom)
+        .where('acompanante', '==', acom)
         .get();
     }
 
@@ -273,8 +273,8 @@ const getone = async (firestore, req, res) => {
     // Query a información de los miembros
     const miembrosSnap = await firestore
       .collection('miembros')
-      .where('grupo', '===', snapshot.id)
-      .where('estatus', '===', 0)
+      .where('grupo', '==', snapshot.id)
+      .where('estatus', '==', 0)
       .get();
     const miembros = [];
     miembrosSnap.forEach((a) => {
@@ -374,8 +374,8 @@ const getBajasTemporales = async (firestore, req, res) => {
     // Query a información de los miembros
     const miembrosSnap = await firestore
       .collection('miembros')
-      .where('grupo', '===', snapshot.id)
-      .where('estatus', '===', 1)
+      .where('grupo', '==', snapshot.id)
+      .where('estatus', '==', 1)
       .get('nombre');
     const miembros = [];
     miembrosSnap.forEach((a) => {
@@ -538,7 +538,7 @@ const remove = async (firestore, req, res) => {
     const batch = firestore.batch();
     const memberSnap = await firestore
       .collection('miembros')
-      .where('grupo', '===', id)
+      .where('grupo', '==', id)
       .get();
     memberSnap.docs.forEach((doc) => {
       batch.delete(doc.ref);
@@ -922,8 +922,8 @@ const getAsistencia = async (firestore, req, res) => {
 
     const miembrosSnap = await firestore
       .collection('miembros')
-      .where('grupo', '===', groupSnap.id)
-      .where('estatus', '===', 0)
+      .where('grupo', '==', groupSnap.id)
+      .where('estatus', '==', 0)
       .get();
     miembrosSnap.forEach((a) => {
       if (!a.exists) return;
@@ -1106,7 +1106,7 @@ const editMemberFicha = async (firestore, req, res) => {
 const getAsistenciasReport = async (firestore, req, res) => {
   const miembros = await firestore
     .collection('miembros')
-    .where('grupo', '===', req.params.id)
+    .where('grupo', '==', req.params.id)
     .get();
   const headers = [
     'IDGrupo',
@@ -1158,8 +1158,8 @@ const getAsistenciasReport = async (firestore, req, res) => {
       d.estatus === 0
         ? 'Activo'
         : d.estatus === 1
-        ? 'Baja temporal'
-        : 'Baja definitiva',
+          ? 'Baja temporal'
+          : 'Baja definitiva',
       d.domicilio.domicilio,
       d.domicilio.colonia,
       d.domicilio.municipio,
@@ -1167,12 +1167,12 @@ const getAsistenciasReport = async (firestore, req, res) => {
       d.domicilio.telefono_casa,
       ...(d.ficha_medica
         ? [
-            d.ficha_medica.ambulancia ? 'SI' : 'NO',
-            d.ficha_medica.alergico ? 'SI' : 'NO',
-            d.ficha_medica.tipo_sangre,
-            d.ficha_medica.servicio_medico,
-            d.ficha_medica.padecimientos,
-          ]
+          d.ficha_medica.ambulancia ? 'SI' : 'NO',
+          d.ficha_medica.alergico ? 'SI' : 'NO',
+          d.ficha_medica.tipo_sangre,
+          d.ficha_medica.servicio_medico,
+          d.ficha_medica.padecimientos,
+        ]
         : ['', '', '', '', '']),
     ]);
   }
@@ -1218,7 +1218,7 @@ const getAsistenciasAsistanceReport = async (firestore, req, res) => {
 
   const memSnap = await firestore
     .collection('miembros')
-    .where('grupo', '===', req.params.id)
+    .where('grupo', '==', req.params.id)
     .get();
 
   const members = [];

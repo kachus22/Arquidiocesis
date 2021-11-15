@@ -15,13 +15,13 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('es');
 
 export default (props) => {
-  var { onEdit, onDelete } = props.route.params;
+  const { onEdit, onDelete } = props.route.params;
 
-  var [persona, setPersona] = useState(false);
-  var [deleting, setDeleting] = useState(false);
-  var [user, setUser] = useState(false);
-  var [refreshing, setRefreshing] = useState(false);
-  var [error, setError] = useState(false);
+  const [persona, setPersona] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [user, setUser] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(false);
   const [parroquia, setParroquia] = useState({ nombre: 'parroquia' });
 
   props.navigation.setOptions({
@@ -49,7 +49,8 @@ export default (props) => {
     getParroco();
   }, []);
 
-  let getParroco = (ref) => {
+  const getParroco = (ref) => {
+    console.log(error);
     if (ref) setRefreshing(true);
     setError(false);
     API.getParroco(props.route.params.persona.id, ref)
@@ -71,17 +72,24 @@ export default (props) => {
           });
       })
       .catch((err) => {
-        console.log(error);
+        console.log(err);
         setError(true);
         setRefreshing(false);
       });
+  };
+
+  const gotoParroquia = () => {
+    props.navigation.navigate('Parroquia', {
+      showCapillas: false,
+      id: parroquia.id,
+    });
   };
 
   if (!persona) {
     return <LoadingView />;
   }
 
-  var deleteParroco = () => {
+  const deleteParroco = () => {
     Alert.alert('¿Eliminar párroco?', 'Esto eliminará los datos del párroco.', [
       { text: 'Cancelar', style: 'cancel' },
       {
@@ -91,12 +99,14 @@ export default (props) => {
           setDeleting(true);
           API.deleteParroco(persona.id)
             .then((done) => {
+              console.log(done);
               setDeleting(false);
               alert('Se ha eliminado el párroco.');
               props.navigation.goBack();
               if (onDelete) onDelete(persona.id);
             })
             .catch((err) => {
+              console.log(err);
               setDeleting(false);
               alert('Hubo un error eliminando el párrocos.');
             });
@@ -105,19 +115,19 @@ export default (props) => {
     ]);
   };
 
-  var changePassword = () => {
+  const changePassword = () => {
     props.navigation.navigate('ChangePassword', {
       admin_email: persona.email,
     });
   };
 
-  var editParroco = () => {
+  const editParroco = () => {
     props.navigation.navigate('EditParroco', {
       persona,
       parr: parroquia,
       onEdit: (data) => {
-        var p = { ...persona };
-        for (var i in data) {
+        const p = { ...persona };
+        for (const i in data) {
           p[i] = data[i];
         }
         setPersona(p);
@@ -126,11 +136,11 @@ export default (props) => {
     });
   };
 
-  var getFechaNacimiento = () => {
+  const getFechaNacimiento = () => {
     if (!persona.fecha_nacimiento || !persona.fecha_nacimiento._seconds) {
       return moment().format('MMMM DD, YYYY');
     }
-    var f = moment
+    const f = moment
       .unix(persona.fecha_nacimiento._seconds)
       .format('MMMM DD, YYYY');
     return f.charAt(0).toUpperCase() + f.substr(1);
@@ -165,10 +175,13 @@ export default (props) => {
         />
 
         <Input name="Teléfono Móvil" value={persona.telefono_movil} readonly />
+
         {parroquia && (
           <Input value={parroquia.nombre} name={'Parroquia'} readonly />
         )}
       </View>
+
+      {parroquia && <Item text="Ver parroquia" onPress={gotoParroquia} />}
 
       {user && (user.type === 'admin' || user.type === 'superadmin') && (
         <Item text="Cambiar contraseña" onPress={changePassword} />
