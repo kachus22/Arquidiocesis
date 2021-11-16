@@ -1388,6 +1388,20 @@ async function getStats(zone, decanato) {
 }
 
 /**
+ * Get group members' stats
+ */
+async function getStatsReportUrl(body, zone, decanato) {
+  let params = '?';
+  if (zone) {
+    params += `zone=${zone}`;
+  }
+  if (decanato) {
+    params += `&decanato=${decanato}`;
+  }
+  return `estadisticas/reporte${params}`;
+}
+
+/**
  * Get the list of parrocos
  * @param {boolean} force Bypass the cache
  */
@@ -1522,6 +1536,7 @@ export default {
   formatURL,
   getCoordinador,
   getStats,
+  getStatsReportUrl,
   getEvents,
   addEvent,
   deleteEvent,
