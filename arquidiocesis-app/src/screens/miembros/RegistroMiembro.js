@@ -3,6 +3,8 @@ Nombre: RegistroMiembro.js
 Usuario con acceso: Admin
 Descripción: Pantalla para registrar un miembro de un grupo HEMA
 */
+import * as DocumentPicker from 'expo-document-picker';
+import readXlsxFile from 'read-excel-file';
 import React, { useState } from 'react';
 import { Text, StyleSheet, CheckBox, View, Switch } from 'react-native';
 import { Input, Button, Picker, Alert, DatePicker } from '../../components';
@@ -60,6 +62,119 @@ export default (props) => {
   React.useEffect(() => {
     API.getOficios().then(setListaOficios);
   }, []);
+
+  const downloadFormat = async () => {
+    const win = window.open('https://docs.google.com/spreadsheets/d/134EqGgTxpGc36GB6UCbcOqfBtgbo6pS-gnHOqTQxdBQ/edit?usp=sharing', '_blank');
+    if (win != null) {
+      win.focus();
+    }
+  };
+
+  const selectOneFile = async () => {
+    const result = await DocumentPicker.getDocumentAsync({
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+ 
+    console.log(result);
+ 
+    if (!result.cancelled) {
+      readXlsxFile(result.output[0]).then((rows) => {
+        // `rows` is an array of rows
+        // each row being an array of cells.
+        rows.shift();
+        rows.forEach((row, index) => {
+          const data = {
+            nombre: row[0],
+            apellido_paterno: row[1],
+            apellido_materno: row[2],
+            fecha_nacimiento: row[3], //FIXME
+            estado_civil: row[4],
+            sexo: row[5],
+            email: row[6],
+            escolaridad: row[7],
+            oficio: row[8],
+            domicilio: {
+              domicilio: row[9],
+              colonia: row[10],
+              municipio: row[11],
+              telefono_casa: row[12],
+              telefono_movil: row[13],
+            },
+            laptop: row[14] === 'si' ? true : false,
+            smartphone: row[15] === 'si' ? true : false,
+            tablet: row[16] === 'si' ? true : false,
+            facebook: row[17] === 'si' ? true : false,
+            twitter: row[18] === 'si' ? true : false,
+            instagram: row[19] === 'si' ? true : false,
+            ficha_medica: {
+              tipo_sangre: row[20],
+              servicio_medico: row[21],
+              alergico: row[22] === 'si' ? true : false,
+              alergico_desc: row[22] === 'si' ? row[23] : '',
+              p_cardiovascular: row[23] === 'si' ? true : false,
+              p_azucar: row[24] === 'si' ? true : false,
+              p_hipertension: row[25] === 'si' ? true : false,
+              p_sobrepeso: row[26] === 'si' ? true : false,
+              seguridad_social: row[27],
+              discapacidad: row[28] === 'si' ? true : false,
+              discapacidad_desc: row[28] === 'si' ? row[29] : '',
+              ambulancia: row[28] === 'si' ? true : false,
+            },
+          };
+          const { valid, prompt } = Util.validateForm(data, {
+            nombre: {
+              type: 'minLength',
+              value: 3,
+              prompt: 'Favor de introducir el nombre.',
+            },
+            apellido_paterno: {
+              type: 'empty',
+              prompt: 'Favor de introducir el apelldio paterno.',
+            },
+            fecha_nacimiento: {
+              type: 'empty',
+              prompt: 'Favor de introducir la fecha de nacimiento.',
+            },
+            sexo: { type: 'empty', prompt: 'Favor de introducir el sexo.' },
+            estado_civil: {
+              type: 'empty',
+              prompt: 'Favor de introducir el estado civil.',
+            },
+            escolaridad: {
+              type: 'empty',
+              prompt: 'Favor de introducir la escolaridad.',
+            },
+            oficio: { type: 'empty', prompt: 'Favor de introducir el oficio.' },
+          });
+      
+          if (!valid) {
+            return Alert.alert(`Error linea ${index}`, prompt);
+          }
+
+        setLoading(true);
+        console.log('registrando.');
+        API.registerMember(group.id, data)
+          .then((new_member) => {
+            setLoading(false);
+            if (!new_member)
+              return Alert.alert(`Error linea ${index}`, 'Hubo un error registrando el miembro');
+            if (onAdd) onAdd(new_member);
+          })
+          .catch((err) => {
+            if (err.code && err.code === 999) {
+              Alert.alert('Error', 'No tienes acceso a este grupo.');
+            } else {
+              Alert.alert('Error', 'Hubo un error registrando el miembro');
+            }
+            setLoading(false);
+          });
+        });
+
+        Alert.alert('Exito', 'Se han agregado miembros al grupo.');
+        props.navigation.goBack();
+      });
+    }
+  };
 
   const doRegister = () => {
     if (loading) return;
@@ -169,6 +284,14 @@ export default (props) => {
     <KeyboardAwareScrollView style={styles.loginContainer} bounces={true}>
       <Text style={styles.header}>Registrar Miembro</Text>
       <Text style={styles.subHeader}>{group.nombre}</Text>
+
+      <Text style={styles.subHeader2}>Registrar varios</Text>
+
+      <Button text="Descargar formato" loading={loading} onPress={downloadFormat} />
+      <Button text="Registrar por archivo" loading={loading} onPress={selectOneFile} />
+
+
+      <Text style={styles.subHeader2}>Registrar Individual</Text>
       <Input name="Nombre" value={name} onChangeText={setName} />
       <Input
         name="Apellido Paterno"
@@ -421,6 +544,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     color: 'grey',
+    marginBottom: 20,
+  },
+  subHeader2: {
+    fontSize: 20,
+    textAlign: 'center',
+    color: 'grey',
+    marginTop: 25,
     marginBottom: 20,
   },
   section: {

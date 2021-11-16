@@ -59,6 +59,7 @@
     "react-native-table-component": "cbarrazaa1/react-native-table-component#master",
     "react-native-web": "~0.13.12",
     "react-native-web-refresh-control": "^1.0.2",
+    "read-excel-file": "^5.2.24",
     "reanimated-bottom-sheet": "^1.0.0-alpha.19",
     "uuid": "^8.3.2",
     "video-metadata-thumbnails": "^1.0.22"
