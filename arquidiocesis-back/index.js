@@ -384,7 +384,7 @@ app.get('/api/estadisticas/', (req, res) =>
   estadisticas.getEstadisticas(firestore, req, res)
 );
 
-app.post('/api/estadisticas/reporte', (req, res) =>
+app.get('/api/estadisticas/reporte', (req, res) =>
   estadisticas.getReporteEstadisticas(firestore, req, res)
 );
 

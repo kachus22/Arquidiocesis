@@ -4,7 +4,7 @@ Usuario con acceso: Admin, acompañante, coordinador
 Descripción: Pantalla para ver los grupos HEMA
 */
 import React, { useState } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, Platform, Linking } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Input, Button } from '../../components';
 import {
@@ -12,26 +12,59 @@ import {
   CollapseHeader,
   CollapseBody,
 } from 'accordion-collapse-react-native';
+import { API } from '../../lib';
 
 export default () => {
-  // var [user, setUser] = useState(null);
-  // var [data, setData] = useState(false);
-  // var [refreshing, setRefreshing] = useState(false);
-  // var [error, setError] = useState(false);
-  const [servPrivado, setPrivado] = useState('');
-  const [servPublico, setPublico] = useState('');
-  const [alergia, setAlergia] = useState('');
-  const [cardio, setCardio] = useState('');
-  const [azucar, setAzucar] = useState('');
-  const [hipertension, setHipertension] = useState('');
-  const [sobrepeso, setSobrepeso] = useState('');
-  const [jubilado, setJubilado] = useState('');
-  const [pensionado, setPensionado] = useState('');
-  const [primaria, setPrimaria] = useState('');
-  const [secundaria, setSecundaria] = useState('');
-  const [preparatoria, setPreparatoria] = useState('');
-  const [profesion, setProfesion] = useState('');
-  const [estudios, setEstudios] = useState('');
+  const [servPrivado, setPrivado] = useState('20');
+  const [servPublico, setPublico] = useState('20');
+  const [alergia, setAlergia] = useState('20');
+  const [cardio, setCardio] = useState('20');
+  const [azucar, setAzucar] = useState('20');
+  const [hipertension, setHipertension] = useState('20');
+  const [sobrepeso, setSobrepeso] = useState('20');
+  const [jubilado, setJubilado] = useState('20');
+  const [pensionado, setPensionado] = useState('20');
+  const [primaria, setPrimaria] = useState('20');
+  const [secundaria, setSecundaria] = useState('20');
+  const [preparatoria, setPreparatoria] = useState('20');
+  const [profesion, setProfesion] = useState('20');
+  const [estudios, setEstudios] = useState('20');
+
+  const statsReport = async (setLoading) => {
+    const values = `${servPrivado},${servPublico},${alergia},${cardio},${azucar},${hipertension},${sobrepeso},${jubilado},${pensionado},${primaria},${secundaria},${preparatoria},${profesion},${estudios}`;
+    const reportUrl = API.getStatsReportUrl(values, null, null).then((url) => {
+      getFile(url, 'Reporte-Alertas.xlsx', setLoading);
+    });
+  };
+
+  const getFile = (url, name, setLoading) => {
+    return Platform.select({
+      ios: emailFile,
+      android: emailFile,
+      web: () => {
+        Linking.openURL(url);
+      },
+    })(url, name, setLoading);
+  };
+
+  const emailFile = (url, name, setLoading) => {
+    setLoading(true);
+    FileSystem.downloadAsync(url, FileSystem.documentDirectory + name)
+      .then((d) => {
+        setDownloading(false);
+        setLoading(false);
+        if (d.stats == 404)
+          return Alert.alert('Hubo un error cargando el reporte.');
+        MailComposer.composeAsync({
+          attachments: [d.uri],
+        });
+      })
+      .catch((err) => {
+        setDownloading(false);
+        setLoading(false);
+        return Alert.alert('Hubo un error cargando el reporte.');
+      });
+  };
 
   return (
     <KeyboardAwareScrollView style={styles.loginContainer} bounces={true}>
@@ -130,7 +163,7 @@ export default () => {
         </CollapseBody>
       </Collapse>
 
-      <Button text="Realizar Reporte" />
+      <Button text="Realizar Reporte" onPress={statsReport} />
     </KeyboardAwareScrollView>
   );
 };
