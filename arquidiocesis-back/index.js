@@ -384,10 +384,6 @@ app.get('/api/estadisticas/', (req, res) =>
   estadisticas.getEstadisticas(firestore, req, res)
 );
 
-app.post('/api/estadisticas/reporte', (req, res) =>
-  estadisticas.getReporteEstadisticas(firestore, req, res)
-);
-
 app.post('/api/groups', (req, res) => grupos_conv.add(firestore, req, res));
 
 app.get('/api/groups/get/:id', (req, res) =>
