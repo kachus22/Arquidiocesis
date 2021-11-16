@@ -1390,7 +1390,7 @@ async function getStats(zone, decanato) {
 /**
  * Get group members' stats
  */
-async function getStatsReportUrl(zone, decanato) {
+async function getStatsReportUrl(values, zone, decanato) {
   let url = await formatURL(`estadisticas/reporte`);
   let params = '';
   if (zone) {
@@ -1399,6 +1399,7 @@ async function getStatsReportUrl(zone, decanato) {
   if (decanato) {
     params += `&decanato=${decanato}`;
   }
+  params += `&values=${values}`
   return `${url}${params}`;
 }
 
