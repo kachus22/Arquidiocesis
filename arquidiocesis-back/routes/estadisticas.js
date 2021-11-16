@@ -235,7 +235,32 @@ const getEstadisticas = async (firestore, req, res) => {
 
 const getReporteEstadisticas = async (firestore, req, res) => {
   const results = await estadisticas(firestore, req);
-  const data = req.body;
+  const values = req.query.values.split(',').map(x => parseFloat(x));
+  const data = {
+    servicio_medico: {
+      privado: values[0],
+      publico: values[1],
+    },
+    salud: {
+      alergico: values[2],
+      p_cardiovascular: values[3],
+      p_azucar: values[4],
+      p_hipertension: values[5],
+      p_sobrepeso: values[6],
+    },
+    seguridad_social: {
+      pensionado: values[7],
+      jubilado: values[8],
+    },
+    escolaridad: {
+      primaria: values[9],
+      secundaria: values[10],
+      preparatoria: values[11],
+      carrera_tecnica: values[12],
+      profesional: values[13],
+      ninguno: values[14],
+    },
+  };
 
   const excelData = [
     {
