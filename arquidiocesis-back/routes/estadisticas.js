@@ -1,4 +1,7 @@
-const getEstadisticas = async (firestore, req, res) => {
+const xlsx = require('xlsx');
+const Readable = require('stream').Readable;
+
+const estadisticas = async (firestore, req) => {
   const servicio = {
     publico: 0,
     privado: 0,
@@ -191,7 +194,7 @@ const getEstadisticas = async (firestore, req, res) => {
     else if (mEscolaridad == 'Profesional') escolaridad.profesional++;
   });
 
-  res.send({
+  return {
     error: false,
     total: total,
     servicio_medico: {
@@ -222,9 +225,229 @@ const getEstadisticas = async (firestore, req, res) => {
       carrera_tecnica: (escolaridad.carrera_tecnica / total) * 100,
       profesional: (escolaridad.profesional / total) * 100,
     },
-  });
+  };
+};
+
+const getEstadisticas = async (firestore, req, res) => {
+  const results = await estadisticas(firestore, req);
+  res.send(results);
+};
+
+const getReporteEstadisticas = async (firestore, req, res) => {
+  const results = await estadisticas(firestore, req);
+  const data = req.body;
+
+  const excelData = [
+    {
+      Sección: 'Servicio Médico',
+      Métrica: 'Privado',
+      'Valor Real': results.servicio_medico.privado,
+      'Valor Esperado': data.servicio_medico.privado,
+      Diferencia:
+        results.servicio_medico.privado - data.servicio_medico.privado,
+      Resultado:
+        results.servicio_medico.publico - data.servicio_medico.publico <= 0
+          ? 'Revisar servicio médico'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Servicio Médico',
+      Métrica: 'Público',
+      'Valor Real': results.servicio_medico.publico,
+      'Valor Esperado': data.servicio_medico.publico,
+      Diferencia:
+        results.servicio_medico.publico - data.servicio_medico.publico,
+      Resultado:
+        results.servicio_medico.publico - data.servicio_medico.publico <= 0
+          ? 'Revisar servicio médico'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Salud',
+      Métrica: 'Alergias',
+      'Valor Real': results.alergico,
+      'Valor Esperado': data.salud.alergico,
+      Diferencia: results.alergico - data.salud.alergico,
+      Resultado:
+        results.alergico - data.salud.alergico >= 0
+          ? 'Revisar salud'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Salud',
+      Métrica: 'Problemas Cardiovasculares',
+      'Valor Real': results.p_cardiovascular,
+      'Valor Esperado': data.salud.p_cardiovascular,
+      Diferencia: results.p_cardiovascular - data.salud.p_cardiovascular,
+      Resultado:
+        results.p_cardiovascular - data.salud.p_cardiovascular >= 0
+          ? 'Revisar salud'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Salud',
+      Métrica: 'Problemas Azúcar',
+      'Valor Real': results.p_azucar,
+      'Valor Esperado': data.salud.p_azucar,
+      Diferencia: results.p_azucar - data.salud.p_azucar,
+      Resultado:
+        results.p_azucar - data.salud.p_azucar >= 0
+          ? 'Revisar salud'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Salud',
+      Métrica: 'Hipertensión',
+      'Valor Real': results.p_hipertension,
+      'Valor Esperado': data.salud.p_hipertension,
+      Diferencia: results.p_hipertension - data.salud.p_hipertension,
+      Resultado:
+        results.p_hipertension - data.salud.p_hipertension >= 0
+          ? 'Revisar salud'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Salud',
+      Métrica: 'Sobrepeso',
+      'Valor Real': results.p_sobrepeso,
+      'Valor Esperado': data.salud.p_sobrepeso,
+      Diferencia: results.p_sobrepeso - data.salud.p_sobrepeso,
+      Resultado:
+        results.p_sobrepeso - data.salud.p_sobrepeso >= 0
+          ? 'Revisar salud'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Seguridad Social',
+      Métrica: 'Jubiliadas',
+      'Valor Real': results.seguridad_social.jubilado,
+      'Valor Esperado': data.seguridad_social.jubilado,
+      Diferencia:
+        results.seguridad_social.jubilado - data.seguridad_social.jubilado,
+      Resultado:
+        results.seguridad_social.jubilado - data.seguridad_social.jubilado <= 0
+          ? 'Revisar seguridad social'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Seguridad Social',
+      Métrica: 'Pensionadas',
+      'Valor Real': results.seguridad_social.pensionado,
+      'Valor Esperado': data.seguridad_social.pensionado,
+      Diferencia:
+        results.seguridad_social.pensionado - data.seguridad_social.pensionado,
+      Resultado:
+        results.seguridad_social.pensionado -
+          data.seguridad_social.pensionado <=
+        0
+          ? 'Revisar seguridad social'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Educación',
+      Métrica: 'Primaria',
+      'Valor Real': results.escolaridad.primaria,
+      'Valor Esperado': data.escolaridad.primaria,
+      Diferencia: results.escolaridad.primaria - data.escolaridad.primaria,
+      Resultado:
+        results.escolaridad.primaria - data.escolaridad.primaria <= 0
+          ? 'Revisar escolaridad'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Educación',
+      Métrica: 'Secundaria',
+      'Valor Real': results.escolaridad.secundaria,
+      'Valor Esperado': data.escolaridad.secundaria,
+      Diferencia: results.escolaridad.secundaria - data.escolaridad.secundaria,
+      Resultado:
+        results.escolaridad.secundaria - data.escolaridad.secundaria <= 0
+          ? 'Revisar escolaridad'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Educación',
+      Métrica: 'Preparatoria',
+      'Valor Real': results.escolaridad.preparatoria,
+      'Valor Esperado': data.escolaridad.preparatoria,
+      Diferencia:
+        results.escolaridad.preparatoria - data.escolaridad.preparatoria,
+      Resultado:
+        results.escolaridad.preparatoria - data.escolaridad.preparatoria <= 0
+          ? 'Revisar escolaridad'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Educación',
+      Métrica: 'Técnicas',
+      'Valor Real': results.escolaridad.carrera_tecnica,
+      'Valor Esperado': data.escolaridad.carrera_tecnica,
+      Diferencia:
+        results.escolaridad.carrera_tecnica - data.escolaridad.carrera_tecnica,
+      Resultado:
+        results.escolaridad.carrera_tecnica -
+          data.escolaridad.carrera_tecnica <=
+        0
+          ? 'Revisar escolaridad'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Educación',
+      Métrica: 'Profesional',
+      'Valor Real': results.escolaridad.profesional,
+      'Valor Esperado': data.escolaridad.profesional,
+      Diferencia:
+        results.escolaridad.profesional - data.escolaridad.profesional,
+      Resultado:
+        results.escolaridad.profesional - data.escolaridad.profesional <= 0
+          ? 'Revisar escolaridad'
+          : 'Positivo',
+    },
+    {
+      Sección: 'Educación',
+      Métrica: 'Sin Estudios',
+      'Valor Real': results.escolaridad.ninguno,
+      'Valor Esperado': data.escolaridad.ninguno,
+      Diferencia: results.escolaridad.ninguno - data.escolaridad.ninguno,
+      Resultado:
+        results.escolaridad.ninguno - data.escolaridad.ninguno >= 0
+          ? 'Revisar escolaridad'
+          : 'Positivo',
+    },
+  ];
+
+  const book = xlsx.utils.book_new();
+  const sheet1 = xlsx.utils.json_to_sheet(excelData);
+
+  // Format columns and rows
+  const cols = [
+    { wpx: 100 },
+    { wpx: 2000 },
+    { wpx: 10 },
+    { wpx: 20 },
+    { wpx: 40 },
+  ];
+  sheet1['!cols'] = cols;
+  const merge = [
+    { s: { r: 1, c: 0 }, e: { r: 2, c: 0 } },
+    { s: { r: 3, c: 0 }, e: { r: 7, c: 0 } },
+    { s: { r: 8, c: 0 }, e: { r: 9, c: 0 } },
+    { s: { r: 10, c: 0 }, e: { r: 15, c: 0 } },
+  ];
+  sheet1['!merges'] = merge;
+
+  xlsx.utils.book_append_sheet(book, sheet1, '');
+  const buf = xlsx.write(book, { type: 'buffer', bookType: 'xls' });
+  const stream = new Readable();
+  stream.push(buf);
+  stream.push(null);
+
+  res.setHeader('Content-Type', 'application/vnd.ms-excel');
+  res.attachment('Reporte-Alertas' + '.xls');
+  return stream.pipe(res);
 };
 
 module.exports = {
   getEstadisticas,
+  getReporteEstadisticas,
 };
